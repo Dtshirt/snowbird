@@ -63,6 +63,20 @@ function classNames(...args) {
   return args.filter(Boolean).join(' ');
 }
 
+// Format a US phone number as the user types or pastes.
+// Accepts anything (digits, +1, spaces, dashes, parens, dots) and returns
+// a canonical (XXX) XXX-XXXX string. Strips leading country code "1" if present.
+function formatPhone(input) {
+  if (!input) return '';
+  let digits = String(input).replace(/\D/g, '');
+  if (digits.length === 11 && digits.startsWith('1')) digits = digits.slice(1);
+  digits = digits.slice(0, 10);
+  if (digits.length === 0) return '';
+  if (digits.length <= 3) return `(${digits}`;
+  if (digits.length <= 6) return `(${digits.slice(0, 3)}) ${digits.slice(3)}`;
+  return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
+}
+
 export default function QuoteForm({
   pageType = 'other',
   pageUrl,
@@ -558,9 +572,15 @@ export default function QuoteForm({
                   inputMode="tel"
                   autoComplete="tel"
                   placeholder="(555) 123-4567"
+                  maxLength={14}
                   className={inputBase}
                   value={values.phone}
-                  onChange={(e) => updateField('phone', e.target.value)}
+                  onChange={(e) => updateField('phone', formatPhone(e.target.value))}
+                  onPaste={(e) => {
+                    e.preventDefault();
+                    const pasted = (e.clipboardData || window.clipboardData).getData('text');
+                    updateField('phone', formatPhone(pasted));
+                  }}
                 />
               </Field>
             </div>

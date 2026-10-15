@@ -1,46 +1,46 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
-let scriptLoadingPromise = null;
+let placesLibraryPromise = null;
 
-function loadGoogleMaps(apiKey) {
-  if (typeof window === 'undefined') return Promise.reject(new Error('window unavailable'));
-  if (window.google && window.google.maps && window.google.maps.places) return Promise.resolve();
-  if (scriptLoadingPromise) return scriptLoadingPromise;
-
-  scriptLoadingPromise = new Promise((resolve, reject) => {
-    const existing = document.querySelector('script[data-google-maps-loader="true"]');
-    if (existing) {
-      existing.addEventListener('load', () => resolve());
-      existing.addEventListener('error', reject);
-      return;
-    }
-    const script = document.createElement('script');
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(apiKey)}&libraries=places&loading=async&v=weekly`;
-    script.async = true;
-    script.defer = true;
-    script.setAttribute('data-google-maps-loader', 'true');
-    script.onload = () => resolve();
-    script.onerror = () => { scriptLoadingPromise = null; reject(new Error('Failed to load Google Maps')); };
-    document.head.appendChild(script);
-  });
-
-  return scriptLoadingPromise;
+/**
+ * Google's official dynamic-library-import bootstrap loader.
+ * Installs window.google.maps.importLibrary synchronously as a shim; the real
+ * Maps JS script is fetched lazily on the first importLibrary() call.
+ */
+function bootstrapGoogleMaps(apiKey) {
+  if (typeof window === 'undefined') return;
+  if (window.google?.maps?.importLibrary) return;
+  // eslint-disable-next-line
+  ((g) => { var h,a,k,p="The Google Maps JavaScript API",c="google",l="importLibrary",q="__ib__",m=document,b=window;b=b[c]||(b[c]={});var d=b.maps||(b.maps={}),r=new Set,e=new URLSearchParams,u=()=>h||(h=new Promise(async(f,n)=>{await (a=m.createElement("script"));e.set("libraries",[...r]+"");for(k in g)e.set(k.replace(/[A-Z]/g,t=>"_"+t[0].toLowerCase()),g[k]);e.set("callback",c+".maps."+q);a.src=`https://maps.${c}apis.com/maps/api/js?`+e;d[q]=f;a.onerror=()=>h=n(Error(p+" could not load."));a.nonce=m.querySelector("script[nonce]")?.nonce||"";m.head.append(a)}));d[l]?console.warn(p+" only loads once. Ignoring:",g):d[l]=(f,...n)=>r.add(f)&&u().then(()=>d[l](f,...n))})({ key: apiKey, v: "weekly" });
 }
 
-function extractZipFromPlace(place) {
-  const components = place?.address_components || [];
+async function loadPlacesLibrary(apiKey) {
+  bootstrapGoogleMaps(apiKey);
+  if (!window.google?.maps?.importLibrary) {
+    throw new Error('google.maps.importLibrary is not available after bootstrap');
+  }
+  if (!placesLibraryPromise) {
+    placesLibraryPromise = window.google.maps.importLibrary('places');
+  }
+  return placesLibraryPromise;
+}
+
+function extractFromPlaceNew(place) {
+  const components = place?.addressComponents || [];
   let zip = '';
   let city = '';
   let state = '';
   for (const c of components) {
     const types = c.types || [];
-    if (types.includes('postal_code')) zip = c.long_name;
-    else if (!city && types.includes('locality')) city = c.long_name;
-    else if (!city && types.includes('postal_town')) city = c.long_name;
-    else if (!city && types.includes('administrative_area_level_3')) city = c.long_name;
-    else if (types.includes('administrative_area_level_1')) state = c.short_name;
+    const longText = c.longText || c.long_name || '';
+    const shortText = c.shortText || c.short_name || '';
+    if (types.includes('postal_code')) zip = longText;
+    else if (!city && types.includes('locality')) city = longText;
+    else if (!city && types.includes('postal_town')) city = longText;
+    else if (!city && types.includes('administrative_area_level_3')) city = longText;
+    else if (types.includes('administrative_area_level_1')) state = shortText;
   }
   return { zip, city, state };
 }
@@ -54,80 +54,165 @@ export default function ZipAutocomplete({
   error = false
 }) {
   const inputRef = useRef(null);
-  const autocompleteRef = useRef(null);
+  const containerRef = useRef(null);
+  const placesLibRef = useRef(null);
+  const sessionTokenRef = useRef(null);
+  const debounceRef = useRef(null);
+
   const [ready, setReady] = useState(false);
   const [loadError, setLoadError] = useState(false);
+  const [suggestions, setSuggestions] = useState([]);
+  const [open, setOpen] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(-1);
 
   useEffect(() => {
     const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
-    if (!apiKey) { setLoadError(true); return; }
+    if (!apiKey) {
+      console.warn('[ZipAutocomplete] NEXT_PUBLIC_GOOGLE_MAPS_API_KEY is missing. ZIP autocomplete disabled.');
+      setLoadError(true);
+      return;
+    }
 
     let disposed = false;
 
-    loadGoogleMaps(apiKey)
-      .then(() => {
-        if (disposed || !inputRef.current || !window.google) return;
+    if (typeof window !== 'undefined' && !window.gm_authFailure) {
+      window.gm_authFailure = () => {
+        console.error(
+          '[ZipAutocomplete] Google Maps authentication failed. Check: (1) Places API (New) is enabled in Google Cloud Console, (2) billing is active, (3) HTTP referrer restrictions on the API key include this origin.'
+        );
+        setLoadError(true);
+      };
+    }
 
-        const ac = new window.google.maps.places.Autocomplete(inputRef.current, {
-          types: ['postal_code'],
-          componentRestrictions: { country: 'us' },
-          fields: ['address_components', 'formatted_address']
-        });
-
-        autocompleteRef.current = ac;
-
-        ac.addListener('place_changed', () => {
-          const place = ac.getPlace();
-          const parsed = extractZipFromPlace(place);
-          if (parsed.zip) {
-            onChange({ zip: parsed.zip, city: parsed.city, state: parsed.state });
-            if (inputRef.current) inputRef.current.value = parsed.zip;
-          }
-        });
-
+    loadPlacesLibrary(apiKey)
+      .then((places) => {
+        if (disposed) return;
+        if (!places || !places.AutocompleteSuggestion || !places.AutocompleteSessionToken) {
+          console.error('[ZipAutocomplete] places.AutocompleteSuggestion is unavailable. Enable "Places API (New)" in Google Cloud Console.');
+          setLoadError(true);
+          return;
+        }
+        placesLibRef.current = places;
+        sessionTokenRef.current = new places.AutocompleteSessionToken();
         setReady(true);
       })
-      .catch(() => { if (!disposed) setLoadError(true); });
+      .catch((err) => {
+        console.error('[ZipAutocomplete] Failed to load Places library.', err);
+        if (!disposed) setLoadError(true);
+      });
 
     return () => {
       disposed = true;
-      if (autocompleteRef.current && window.google?.maps?.event) {
-        window.google.maps.event.clearInstanceListeners(autocompleteRef.current);
-      }
+      if (debounceRef.current) clearTimeout(debounceRef.current);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    function onDocMouseDown(e) {
+      if (containerRef.current && !containerRef.current.contains(e.target)) setOpen(false);
+    }
+    document.addEventListener('mousedown', onDocMouseDown);
+    return () => document.removeEventListener('mousedown', onDocMouseDown);
+  }, []);
+
+  const fetchSuggestions = useCallback(
+    async (text) => {
+      if (!ready || !placesLibRef.current) return;
+      const trimmed = String(text || '').trim();
+      if (trimmed.length < 2) {
+        setSuggestions([]);
+        setOpen(false);
+        return;
+      }
+      try {
+        const { AutocompleteSuggestion } = placesLibRef.current;
+        const { suggestions: s } = await AutocompleteSuggestion.fetchAutocompleteSuggestions({
+          input: trimmed,
+          sessionToken: sessionTokenRef.current,
+          includedRegionCodes: ['us'],
+          includedPrimaryTypes: ['postal_code']
+        });
+        const list = s || [];
+        setSuggestions(list);
+        setOpen(list.length > 0);
+        setActiveIndex(-1);
+      } catch (err) {
+        console.error('[ZipAutocomplete] fetchAutocompleteSuggestions failed.', err);
+      }
+    },
+    [ready]
+  );
 
   function handleTextChange(e) {
     const raw = e.target.value.replace(/[^\d-]/g, '').slice(0, 10);
     onChange({ zip: raw, city: '', state: '' });
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => fetchSuggestions(raw), 220);
+  }
+
+  async function selectSuggestion(suggestion) {
+    const pred = suggestion?.placePrediction;
+    if (!pred) return;
+    try {
+      const place = pred.toPlace();
+      await place.fetchFields({ fields: ['addressComponents', 'formattedAddress'] });
+      const parsed = extractFromPlaceNew(place);
+      if (parsed.zip) {
+        onChange({ zip: parsed.zip, city: parsed.city, state: parsed.state });
+        if (inputRef.current) inputRef.current.value = parsed.zip;
+      }
+      setOpen(false);
+      setSuggestions([]);
+      setActiveIndex(-1);
+      if (placesLibRef.current?.AutocompleteSessionToken) {
+        sessionTokenRef.current = new placesLibRef.current.AutocompleteSessionToken();
+      }
+    } catch (err) {
+      console.error('[ZipAutocomplete] fetchFields failed.', err);
+    }
   }
 
   function handleKeyDown(e) {
-    if (e.key === 'Enter') {
-      const dropdown = document.querySelector('.pac-container:not([style*="display: none"]) .pac-item');
-      if (dropdown) e.preventDefault();
+    if (!open || suggestions.length === 0) return;
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      setActiveIndex((i) => (i + 1 >= suggestions.length ? 0 : i + 1));
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      setActiveIndex((i) => (i <= 0 ? suggestions.length - 1 : i - 1));
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      const idx = activeIndex >= 0 ? activeIndex : 0;
+      selectSuggestion(suggestions[idx]);
+    } else if (e.key === 'Escape') {
+      setOpen(false);
     }
   }
 
   const loading = !ready && !loadError;
-
   const borderClass = error ? 'border-red-400' : 'border-slate-300';
   const base = `w-full rounded-md border ${borderClass} bg-white px-3 py-2.5 text-slate-800 placeholder:text-slate-400 focus:border-brand-navy focus:outline-none focus:ring-2 focus:ring-brand-navy/20`;
 
   return (
-    <div className="relative">
+    <div ref={containerRef} className="relative">
       <input
         ref={inputRef}
         id={id}
         type="text"
         inputMode="numeric"
         autoComplete="postal-code"
+        role="combobox"
+        aria-expanded={open}
+        aria-controls={`${id}-listbox`}
+        aria-autocomplete="list"
         placeholder={loading ? '' : placeholder}
         className={`${base} ${className} ${loading ? 'text-transparent placeholder:text-transparent caret-transparent' : ''}`.trim()}
         value={typeof value === 'string' ? value : value?.zip || ''}
         onChange={handleTextChange}
         onKeyDown={handleKeyDown}
+        onFocus={() => {
+          if (suggestions.length > 0) setOpen(true);
+        }}
         disabled={loading}
         aria-busy={loading || undefined}
       />
@@ -146,6 +231,46 @@ export default function ZipAutocomplete({
             Loading
           </div>
         </div>
+      )}
+
+      {open && suggestions.length > 0 && (
+        <ul
+          id={`${id}-listbox`}
+          role="listbox"
+          className="absolute left-0 right-0 top-full z-[9999] mt-1 max-h-72 overflow-auto rounded-md border border-slate-200 bg-white shadow-lg"
+        >
+          {suggestions.map((s, i) => {
+            const pred = s.placePrediction;
+            if (!pred) return null;
+            const primary = pred.mainText?.text || pred.text?.text || '';
+            const secondary = pred.secondaryText?.text || '';
+            const isActive = i === activeIndex;
+            return (
+              <li
+                key={pred.placeId || `${primary}-${i}`}
+                role="option"
+                aria-selected={isActive}
+                onMouseDown={(e) => {
+                  e.preventDefault();
+                  selectSuggestion(s);
+                }}
+                onMouseEnter={() => setActiveIndex(i)}
+                className={`cursor-pointer border-b border-slate-100 px-3 py-2.5 text-sm last:border-b-0 ${
+                  isActive ? 'bg-brand-cream' : 'bg-white hover:bg-brand-cream/60'
+                }`}
+              >
+                <div className="font-medium text-brand-navy">{primary}</div>
+                {secondary && <div className="text-xs text-slate-500">{secondary}</div>}
+              </li>
+            );
+          })}
+        </ul>
+      )}
+
+      {loadError && (
+        <p className="mt-1 text-[11px] text-slate-500">
+          ZIP suggestions unavailable &mdash; please type the 5-digit ZIP manually.
+        </p>
       )}
     </div>
   );

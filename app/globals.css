@@ -96,7 +96,7 @@
 
 /* Google Places Autocomplete dropdown */
 .pac-container {
-  z-index: 60;
+  z-index: 9999;
   border-radius: 0.5rem;
   border: 1px solid #e2e8f0;
   box-shadow: 0 12px 32px rgba(11, 37, 69, 0.12);

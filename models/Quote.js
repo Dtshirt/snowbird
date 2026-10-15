@@ -48,7 +48,7 @@ const QuoteSchema = new mongoose.Schema(
 
     pageType: {
       type: String,
-      enum: ['home', 'state', 'route', 'destination', 'resource', 'other'],
+      enum: ['home', 'state', 'route', 'destination', 'city', 'resource', 'calculator', 'other'],
       default: 'other',
       index: true
     },
