@@ -2,6 +2,7 @@ import './globals.css';
 import { site } from '@/data/site';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import Script from 'next/script';
 
 export const metadata = {
   metadataBase: new URL(site.url),
@@ -69,10 +70,11 @@ export default function RootLayout({ children }) {
           href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap"
           rel="stylesheet"
         />
-        <script
+        <Script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(orgSchema) }}
         />
+        <meta name="google-site-verification" content="BIUgWs9Xp0z3RKe-IJYQluHV-6PD92NlZi_oL3I8q1c" />
       </head>
       <body>
         <a
