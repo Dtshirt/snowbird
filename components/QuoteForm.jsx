@@ -7,6 +7,13 @@ import { vehicleMakes, getModelsForMake } from '@/data/vehicles';
 const CONDITIONS = ['Running', 'Not Running'];
 const TRANSPORT = ['Open Transport', 'Enclosed Transport', 'Not Sure'];
 
+// Legal consent text shown next to the required checkbox. Snapshotted into every
+// stored Quote so we can prove exactly what the customer agreed to. Bump the
+// version string whenever the wording changes.
+const CONSENT_VERSION = 'v2-2026-10-16';
+const CONSENT_TEXT =
+  'I agree to be contacted by Snowbird Car Shipping and its partner carriers by phone, text, or email about my shipping request.';
+
 const OTHER = 'Other';
 const OTHER_LABEL = 'Other / not listed';
 
@@ -108,6 +115,7 @@ export default function QuoteForm({
     vehicleCondition: initialValues?.vehicleCondition || 'Running',
     transportType: initialValues?.transportType || 'Open Transport',
     pickupDate: initialValues?.pickupDate || '',
+    consentGiven: true,
     website: ''
   }));
 
@@ -207,6 +215,7 @@ export default function QuoteForm({
       const digits = values.phone.replace(/\D/g, '');
       if (digits.length !== 10 && !(digits.length === 11 && digits.startsWith('1')))
         e.phone = 'Enter a valid US phone number.';
+      if (!values.consentGiven) e.consentGiven = 'Please check the box to agree.';
     }
     return e;
   }
@@ -259,7 +268,7 @@ export default function QuoteForm({
         allErrors.transportType
       )
         errorSteps.push(2);
-      if (allErrors.fullName || allErrors.email || allErrors.phone) errorSteps.push(3);
+      if (allErrors.fullName || allErrors.email || allErrors.phone || allErrors.consentGiven) errorSteps.push(3);
       if (errorSteps.length && !errorSteps.includes(step)) {
         setStep(errorSteps[0]);
       }
@@ -290,7 +299,10 @@ export default function QuoteForm({
       originState,
       destinationState,
       source: calculatorContext ? 'calculator' : 'website',
-      calculator: calculatorContext || null
+      calculator: calculatorContext || null,
+      consentGiven: values.consentGiven === true,
+      consentText: CONSENT_TEXT,
+      consentVersion: CONSENT_VERSION
     };
 
     try {
@@ -323,6 +335,11 @@ export default function QuoteForm({
   const inputBase = onDark
     ? 'w-full rounded-md border border-white/20 bg-white/10 px-3 py-2.5 text-white placeholder:text-white/50 focus:border-brand-goldLight focus:outline-none focus:ring-2 focus:ring-brand-goldLight/50'
     : 'w-full rounded-md border border-slate-300 bg-white px-3 py-2.5 text-slate-800 placeholder:text-slate-400 focus:border-brand-navy focus:outline-none focus:ring-2 focus:ring-brand-navy/20';
+
+  // Native <option> elements inherit color from <select>, which breaks the onDark variant
+  // (white text on the OS-default white dropdown panel = invisible). Force a readable combo
+  // on every option regardless of the select's trigger color.
+  const optionClass = 'bg-white text-slate-800';
 
   const legendClass = classNames(
     'text-xs font-semibold uppercase tracking-widest',
@@ -420,9 +437,9 @@ export default function QuoteForm({
                   value={values.vehicleYear}
                   onChange={(e) => updateField('vehicleYear', e.target.value)}
                 >
-                  <option value="">Year</option>
+                  <option value="" className={optionClass}>Year</option>
                   {yearOptions.map((y) => (
-                    <option key={y} value={y}>{y}</option>
+                    <option key={y} value={y} className={optionClass}>{y}</option>
                   ))}
                 </select>
               </Field>
@@ -460,13 +477,13 @@ export default function QuoteForm({
                     value={values.vehicleMake}
                     onChange={(e) => onMakeChange(e.target.value)}
                   >
-                    <option value="">Select make</option>
+                    <option value="" className={optionClass}>Select make</option>
                     {vehicleMakes
                       .filter((m) => m.name !== OTHER)
                       .map((m) => (
-                        <option key={m.name} value={m.name}>{m.name}</option>
+                        <option key={m.name} value={m.name} className={optionClass}>{m.name}</option>
                       ))}
-                    <option value={OTHER}>{OTHER_LABEL}</option>
+                    <option value={OTHER} className={optionClass}>{OTHER_LABEL}</option>
                   </select>
                 )}
               </Field>
@@ -488,11 +505,11 @@ export default function QuoteForm({
                     value={values.vehicleModel}
                     onChange={(e) => onModelChange(e.target.value)}
                   >
-                    <option value="">Select model</option>
+                    <option value="" className={optionClass}>Select model</option>
                     {availableModels.map((m) => (
-                      <option key={m} value={m}>{m}</option>
+                      <option key={m} value={m} className={optionClass}>{m}</option>
                     ))}
-                    <option value={OTHER}>{OTHER_LABEL}</option>
+                    <option value={OTHER} className={optionClass}>{OTHER_LABEL}</option>
                   </select>
                 )}
               </Field>
@@ -639,10 +656,30 @@ export default function QuoteForm({
         )}
       </div>
 
-        <p className={classNames('mt-4 text-[11px] leading-relaxed', onDark ? 'text-white/60' : 'text-slate-500')}>
-          By submitting, you agree to be contacted about your shipping request. We are a licensed auto transport broker and
-          work with licensed and insured motor carriers to arrange transportation.
-        </p>
+        {step === STEPS.length && (
+          <div className="mt-3">
+            <label htmlFor="qf-consentGiven" className="flex cursor-pointer items-start gap-2">
+              <input
+                id="qf-consentGiven"
+                type="checkbox"
+                checked={values.consentGiven}
+                onChange={(e) => updateField('consentGiven', e.target.checked)}
+                className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 cursor-pointer accent-brand-gold"
+                aria-invalid={errors.consentGiven ? 'true' : undefined}
+                aria-describedby={errors.consentGiven ? 'qf-consentGiven-error' : undefined}
+                required
+              />
+              <span className={classNames('text-[11px] leading-snug', onDark ? 'text-white/70' : 'text-slate-500')}>
+                I agree to be contacted by Snowbird &amp; partner carriers by phone, text, or email about my shipping request.
+              </span>
+            </label>
+            {errors.consentGiven && (
+              <p id="qf-consentGiven-error" className="mt-1 text-[11px] font-medium text-red-500">
+                {errors.consentGiven}
+              </p>
+            )}
+          </div>
+        )}
       </form>
     </div>
   );

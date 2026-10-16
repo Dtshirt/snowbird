@@ -71,6 +71,11 @@ const QuoteSchema = new mongoose.Schema(
     ipAddress: { type: String, maxlength: 60, default: null },
     userAgent: { type: String, maxlength: 300, default: null },
 
+    consentGiven: { type: Boolean, required: true },
+    consentGivenAt: { type: Date, default: Date.now },
+    consentText: { type: String, maxlength: 1000, default: '' },
+    consentVersion: { type: String, maxlength: 20, default: 'v1-2026-10-16' },
+
     status: {
       type: String,
       enum: ['new', 'contacted', 'quoted', 'booked', 'cancelled', 'completed'],
@@ -98,4 +103,11 @@ const QuoteSchema = new mongoose.Schema(
 QuoteSchema.index({ createdAt: -1 });
 QuoteSchema.index({ status: 1, createdAt: -1 });
 
-export const Quote = mongoose.models.Quote || mongoose.model('Quote', QuoteSchema);
+// In Next.js dev mode, HMR re-imports this file but Mongoose keeps the first
+// registered model in mongoose.models. If we add schema fields later, the stale
+// cached model silently drops them on .create() (strict mode). Deleting the
+// cached model forces re-registration with the current schema shape.
+if (mongoose.models.Quote) {
+  mongoose.deleteModel('Quote');
+}
+export const Quote = mongoose.model('Quote', QuoteSchema);
