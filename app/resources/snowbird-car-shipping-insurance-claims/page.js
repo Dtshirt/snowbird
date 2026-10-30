@@ -33,7 +33,7 @@ const faqs = [
   },
   {
     q: 'How long do I have to file a cargo insurance claim?',
-    a: 'Typically 15 to 30 days from delivery date. File within 48 to 72 hours for best results. Hidden damage noticed later must be documented quickly with photos and your original pickup/delivery BOL. [INSERT STAT + SOURCE: carrier claim window]'
+    a: 'Claim windows vary by carrier, and some are short. Note visible damage on the delivery bill of lading before the driver leaves, then file in writing within 48 to 72 hours with photos. Hidden damage noticed later must be documented quickly with photos and your pickup and delivery BOL copies.'
   },
   {
     q: 'Does the broker file the claim for me or do I file direct with the carrier?',
@@ -41,7 +41,7 @@ const faqs = [
   },
   {
     q: 'What documentation do I need for a car shipping damage claim?',
-    a: 'Original signed BOL from pickup, signed BOL from delivery with damage noted, time-stamped photos of damage, estimate from a licensed body shop, your personal insurance information. Keep every email and text from the broker and carrier. [INSERT EXPERIENCE]'
+    a: 'Original signed BOL from pickup, signed BOL from delivery with damage noted, time-stamped photos of damage, estimate from a licensed body shop, your personal insurance information. Keep every email and text from the broker and carrier.'
   },
   {
     q: 'How long does a cargo insurance claim take to resolve?',

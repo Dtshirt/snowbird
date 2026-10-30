@@ -8,7 +8,6 @@ import HowItWorks from '@/components/HowItWorks';
 import PricingSection from '@/components/PricingSection';
 import FAQ from '@/components/FAQ';
 import QuoteCTA from '@/components/QuoteCTA';
-import Testimonials from '@/components/Testimonials';
 import BrokerNote from '@/components/BrokerNote';
 import RoundTripSection from '@/components/RoundTripSection';
 import HomeSEOContent from '@/components/HomeSEOContent';
@@ -65,11 +64,11 @@ const homeFaqs = [
   // ── Safety, insurance, logistics ───────────────────────────────────────
   {
     q: 'Is snowbird car shipping safe for my vehicle?',
-    a: 'Yes. Every carrier we work with is licensed with the FMCSA and carries active cargo insurance. For most standard cars, open transport is safe and widely used. For luxury, classic, or collector cars, you can pick enclosed transport for extra cover from weather and road debris.'
+    a: 'Yes. Every carrier we work with must hold active FMCSA operating authority and cargo insurance. For most standard cars, open transport is safe and widely used. For luxury, classic, or collector cars, you can pick enclosed transport for extra cover from weather and road debris.'
   },
   {
     q: 'Is my vehicle insured during transport?',
-    a: 'Yes. Every motor carrier we work with maintains active cargo insurance as required by federal regulations. You can request a copy of the carrier\'s certificate of insurance before pickup, and the policy covers damage that happens while the vehicle is in the carrier\'s care.'
+    a: 'Yes. Every motor carrier we work with must carry active cargo insurance as a condition of hauling for us. You can request a copy of the carrier\'s certificate of insurance before pickup. The policy covers damage the carrier causes while the vehicle is in its care, so note any existing marks on the bill of lading at pickup.'
   },
   {
     q: 'Can I pack items in my car when shipping it as a snowbird?',
@@ -100,12 +99,12 @@ export default function HomePage() {
       <Hero
         eyebrow="Seasonal Auto Transport"
         title="Snowbird car shipping across the Sun Belt."
-        description="We help snowbirds move vehicles between northern states and the four leading winter destinations — Florida, Arizona, Texas and California. Licensed broker, seasonal expertise, and coordination from quote to delivery."
+        description="We help snowbirds move vehicles between northern states and the four leading winter destinations — Florida, Arizona, Texas and California — south in the fall and back north in the spring. One point of contact from quote to delivery."
         bullets={[
-          'Four destination clusters: Florida, Arizona, Texas, California',
+          'Florida, Arizona, Texas and California, in both directions',
           'Open and enclosed transport for seasonal shipments',
-          'Concierge coordination for pickup, delivery and check-ins',
-          'Transparent quotes with no upfront deposit required'
+          'Coordination for pickup, delivery and check-ins',
+          '10% deposit to book, 100% refundable'
         ]}
         pageType="home"
         pageUrl="/"
@@ -126,8 +125,6 @@ export default function HomePage() {
       <PricingSection />
 
       <RoundTripSection />
-
-      <Testimonials />
 
       <HomeSEOContent />
 

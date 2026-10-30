@@ -13,6 +13,7 @@ import { destinationCities, getCity, getAllCityRoutes } from '@/data/cities';
 import { getDestinationBySlug } from '@/data/destinations';
 import { getRoutesByDestination } from '@/data/routes';
 import { DestinationHeroImage } from '@/components/DestinationScenes';
+import { staticCityKeys, templatePageRobots } from '@/data/indexable';
 
 export function generateStaticParams() {
   return getAllCityRoutes();
@@ -23,9 +24,10 @@ export async function generateMetadata({ params }) {
   const c = getCity(state, city);
   if (!c) return { title: 'City Not Found' };
   return {
-    title: `Snowbird Car Shipping to ${c.city}, ${c.stateAbbr}`,
+    title: `Car Shipping to ${c.city}, ${c.stateAbbr}`,
     description: `${c.tagline} Compare seasonal pricing, transit times and origin routes for shipping a vehicle to ${c.city}, ${c.state}.`,
-    alternates: { canonical: `/destinations/${state}/${city}` }
+    alternates: { canonical: `/destinations/${state}/${city}` },
+    ...(staticCityKeys.has(`${state}/${city}`) ? {} : { robots: templatePageRobots })
   };
 }
 

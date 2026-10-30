@@ -13,20 +13,11 @@ import QuoteCTA from '@/components/QuoteCTA';
 import QuoteForm from '@/components/QuoteForm';
 import BrokerNote from '@/components/BrokerNote';
 import { routes, getRouteBySlug } from '@/data/routes';
+import { staticRouteSlugs, templatePageRobots } from '@/data/indexable';
 
 export function generateStaticParams() {
-  const staticSlugs = new Set([
-    'new-york-to-florida',
-    'new-jersey-to-florida',
-    'pennsylvania-to-florida',
-    'massachusetts-to-florida',
-    'connecticut-to-florida',
-    'maryland-to-florida',
-    'ohio-to-florida',
-    'virginia-to-florida'
-  ]);
   return routes
-    .filter((r) => !staticSlugs.has(r.slug))
+    .filter((r) => !staticRouteSlugs.has(r.slug))
     .map((r) => ({ route: r.slug }));
 }
 
@@ -36,9 +27,10 @@ export async function generateMetadata({ params }) {
   if (!route) return { title: 'Route Not Found' };
 
   return {
-    title: `${route.origin} to ${route.destination} Car Shipping | Snowbird Auto Transport`,
+    title: `${route.origin} to ${route.destination} Car Shipping`,
     description: `Ship your snowbird vehicle from ${route.origin} to ${route.destination}. Typical transit ${route.transitDays}, pricing from $${route.priceLow}. Free quote.`,
-    alternates: { canonical: `/routes/${route.slug}` }
+    alternates: { canonical: `/routes/${route.slug}` },
+    robots: templatePageRobots
   };
 }
 

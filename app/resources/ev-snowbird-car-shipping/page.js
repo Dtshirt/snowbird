@@ -49,7 +49,7 @@ const faqs = [
   },
   {
     q: 'Can I ship my EV during very cold weather without battery damage?',
-    a: 'Yes. EVs handle cold storage fine between -20F and 100F ambient temperatures. The battery self-protects. Short exposures to extreme cold during open-trailer transit do not cause damage. For long shipments through severe cold, enclosed transport adds thermal protection. [INSERT EXPERIENCE]'
+    a: 'Yes. EVs handle cold storage fine between -20F and 100F ambient temperatures. The battery self-protects. Short exposures to extreme cold during open-trailer transit do not cause damage. For long shipments through severe cold, enclosed transport adds thermal protection.'
   },
   {
     q: 'Can the carrier charge my EV during transit if the SOC drops?',

@@ -334,9 +334,9 @@ export default function FloridaCarShippingPage() {
               </p>
             </div>
             <div className="rounded-lg border-l-4 border-brand-gold bg-brand-cream/30 p-5">
-              <h3 className="font-display text-lg font-bold text-brand-navy">Expedited (guaranteed pickup)</h3>
+              <h3 className="font-display text-lg font-bold text-brand-navy">Expedited (priority pickup)</h3>
               <p className="mt-2 text-sm text-slate-700 leading-relaxed">
-                A locked pickup date instead of a 3- to 5-day window. Adds $150 to $400 to the base rate. Worth it when a move-in date, closing, or flight is non-negotiable.
+                Priority dispatch for a specific pickup date instead of a 3- to 5-day window. Dates are still targets, not guarantees. Adds $150 to $400 to the base rate. Worth it when a move-in date, closing, or flight is non-negotiable.
               </p>
             </div>
             <div className="rounded-lg border-l-4 border-brand-gold bg-brand-cream/30 p-5">

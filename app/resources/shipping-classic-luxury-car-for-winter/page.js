@@ -45,7 +45,7 @@ const faqs = [
   },
   {
     q: 'Does the carrier\'s cargo insurance cover concours-level paint defects introduced in transit?',
-    a: 'Cargo insurance covers damage from carrier negligence or accident — not minor paint oxidation from humidity exposure or microscopic debris that only a judge sees. For concours-prep cars, discuss supplemental insurance with your personal collector insurer. [INSERT EXPERIENCE]'
+    a: 'Cargo insurance covers damage from carrier negligence or accident — not minor paint oxidation from humidity exposure or microscopic debris that only a judge sees. For concours-prep cars, discuss supplemental insurance with your personal collector insurer.'
   },
   {
     q: 'How much lead time should I plan for a specialty enclosed classic car shipment?',

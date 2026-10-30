@@ -21,11 +21,11 @@ const faqs = [
   },
   {
     q: 'Is the price difference driver pay or broker margin?',
-    a: 'Mostly driver pay. In peak, brokers raise the dispatch price offered to carriers so a truck accepts the load. Broker margin stays similar in dollars but shrinks as a percentage of the total. Peak pricing is a market-clearing mechanism, not a markup. [INSERT STAT + SOURCE: broker survey]'
+    a: 'Mostly driver pay. In peak, brokers raise the dispatch price offered to carriers so a truck accepts the load. Broker margin stays similar in dollars but shrinks as a percentage of the total. Peak pricing reflects carrier supply and demand more than a markup.'
   },
   {
     q: 'Why does my enclosed quote jump more than my open quote in peak season?',
-    a: 'Open carrier supply nationally is 10x the enclosed carrier supply. When demand rises, enclosed hits capacity faster. Enclosed snowbird quotes can rise 30 to 50 percent in peak weeks vs 20 to 30 percent for open. [INSERT STAT + SOURCE: FMCSA fleet data]'
+    a: 'There are far fewer enclosed carriers than open carriers, so enclosed space fills first when demand rises. In peak weeks, enclosed quotes often climb faster than open quotes on the same route.'
   },
   {
     q: 'If I book 4 months out, do I lock in off-peak pricing?',
@@ -37,11 +37,11 @@ const faqs = [
   },
   {
     q: 'Is the fuel surcharge included in my peak-season quote?',
-    a: 'Yes. The quote you receive is all-in: base rate + fuel + any accessorial fees for your route. If diesel prices spike between quote and dispatch, carriers may ask for a fuel adjustment — but that is rare on quotes under 60 days old. [INSERT: link to EIA diesel pricing data]'
+    a: 'Yes. The quote you receive is all-in: base rate + fuel + any accessorial fees for your route. If diesel prices spike between quote and dispatch, carriers may ask for a fuel adjustment — but that is rare on quotes under 60 days old.'
   },
   {
     q: 'Does peak season affect carrier reliability or just price?',
-    a: 'Both. Peak-week dispatch delays are 1 to 2 days longer on average. On-time delivery drops from 85 percent off-peak to 70 to 75 percent in peak. The 3-day pickup window becomes 5 to 7 days for many routes. [INSERT EXPERIENCE]'
+    a: 'Both. In peak weeks carriers have more loads to choose from, so dispatch can take a day or two longer and pickup windows tend to widen. Build extra time into your plans and avoid booking a flight for the same day as your requested pickup.'
   },
   {
     q: 'Is there a difference between peak-season pricing on short routes vs long routes?',

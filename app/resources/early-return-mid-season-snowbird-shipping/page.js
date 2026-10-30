@@ -21,7 +21,7 @@ const faqs = [
   },
   {
     q: 'Why would a snowbird return early?',
-    a: 'Common reasons: family emergency, business obligation, grandchild events, home repairs up north, canceled winter plans, or simply changed mind. Carriers do not care about the reason — they only need the pickup address and date. [INSERT EXPERIENCE]'
+    a: 'Common reasons: family emergency, business obligation, grandchild events, home repairs up north, canceled winter plans, or simply changed mind. Carriers do not care about the reason — they only need the pickup address and date.'
   },
   {
     q: 'Can I ship my car north while I stay south longer?',

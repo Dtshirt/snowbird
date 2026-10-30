@@ -4,6 +4,8 @@ import TrustBar from '@/components/TrustBar';
 import QuoteCTA from '@/components/QuoteCTA';
 import QuoteForm from '@/components/QuoteForm';
 import BrokerNote from '@/components/BrokerNote';
+import AnswerSummary from '@/components/AnswerSummary';
+import { site } from '@/data/site';
 import { getRouteBySlug, routes } from '@/data/routes';
 
 const slug = 'ohio-to-florida';
@@ -11,12 +13,12 @@ const route = getRouteBySlug(slug);
 
 export function generateMetadata() {
   return {
-    title: 'Ohio to Florida Car Shipping | Snowbird Auto Transport',
+    title: 'Ohio to Florida Car Shipping',
     description:
-      'Ship your car from Ohio to Florida with transparent pricing from $825 open and $1,350 enclosed. Typical 3–6 day transit via I-75, door-to-door service, free quote in two minutes.',
+      'Ship your car from Ohio to Florida with transparent pricing from $825 open and $1,325 enclosed. Typical 3–6 day transit via I-75, door-to-door service, free quote in two minutes.',
     alternates: { canonical: `/routes/${slug}` },
     openGraph: {
-      title: 'Ohio to Florida Car Shipping | Snowbird Auto Transport',
+      title: 'Ohio to Florida Car Shipping | Snowbird Car Shipping',
       description:
         'Dense I-75 snowbird corridor from Cleveland, Columbus, and Cincinnati to every Florida metro. Transparent pricing, 3–6 day transit, strong carrier backhaul.',
       type: 'website'
@@ -131,7 +133,7 @@ const faqs = [
   },
   {
     q: 'Can I book round-trip shipping for both legs of my snowbird season?',
-    a: 'Yes. Round-trip bookings locked in before October usually run 10 to 15 percent below two one-way shipments bought separately. We confirm the southbound pickup window immediately and schedule the April or May northbound leg once your return date is set. The Villages and Fort Myers to Ohio round-trip lanes are especially well-priced because of the strong carrier backhaul on I-75.'
+    a: 'Yes. You can book both legs together: the fall trip south now and the April or May trip north once your return date is set. Booking both early gets you first access to carrier capacity in both peak windows. It is a scheduling advantage, not a guaranteed discount, because each leg is priced on its own market rate.'
   }
 ];
 
@@ -183,14 +185,14 @@ export default function OhioToFloridaRoutePage() {
               <Link href="#quote" className="btn-primary">
                 Get My Free Quote
               </Link>
-              <a href="tel:+18005551234" className="btn-ghost border border-white/30 text-white">
-                Call (800) 555-1234
+              <a href={site.phoneHref} className="btn-ghost border border-white/30 text-white">
+                Call {site.phoneDisplay}
               </a>
             </div>
             <ul className="mt-8 grid gap-2 text-sm text-slate-200 sm:grid-cols-2">
               <li>&bull; 3&ndash;6 day typical transit</li>
-              <li>&bull; Starting at $825 open / $1,350 enclosed</li>
-              <li>&bull; Licensed FMCSA broker &mdash; MC #1234567</li>
+              <li>&bull; Starting at $825 open / $1,325 enclosed</li>
+              <li>&bull; Arranged through a licensed broker partner</li>
               <li>&bull; Door-to-door with snowbird-season scheduling</li>
             </ul>
           </div>
@@ -218,6 +220,11 @@ export default function OhioToFloridaRoutePage() {
           <h2 className="mt-2 font-display text-3xl font-bold text-brand-navy">
             Ohio to Florida route overview
           </h2>
+          <AnswerSummary reviewed="2026-10-31">
+            Shipping a car from Ohio to Florida typically costs $825&ndash;$1,575 on an open carrier or $1,325&ndash;$1,850 in an
+            enclosed carrier for a standard sedan or SUV. Pickup is scheduled as a 1&ndash;3 day window, and transit
+            takes 3&ndash;6 days once the car is on the truck. For southbound shipments, book two to four weeks ahead.
+          </AnswerSummary>
           <div className="mt-6 overflow-hidden rounded-xl border border-slate-200">
             <table className="w-full text-left text-sm">
               <tbody className="divide-y divide-slate-200">
@@ -239,7 +246,7 @@ export default function OhioToFloridaRoutePage() {
                 </tr>
                 <tr className="bg-brand-cream/60">
                   <th className="px-5 py-3 font-semibold text-brand-navy">Starting Price</th>
-                  <td className="px-5 py-3 text-slate-700">$825 open &middot; $1,350 enclosed</td>
+                  <td className="px-5 py-3 text-slate-700">$825 open &middot; $1,325 enclosed</td>
                 </tr>
                 <tr>
                   <th className="px-5 py-3 font-semibold text-brand-navy">Popular Season (Southbound)</th>

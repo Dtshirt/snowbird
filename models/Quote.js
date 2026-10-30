@@ -16,7 +16,7 @@ const QuoteSchema = new mongoose.Schema(
     pickupCity: { type: String, required: true, maxlength: 80 },
     pickupState: { type: String, required: true, maxlength: 40 },
     pickupStateShort: { type: String, maxlength: 4, default: '' },
-    pickupZip: { type: String, required: true, maxlength: 10 },
+    pickupZip: { type: String, maxlength: 10, default: '' },
     pickupLat: { type: Number, default: null },
     pickupLng: { type: Number, default: null },
 
@@ -25,7 +25,7 @@ const QuoteSchema = new mongoose.Schema(
     deliveryCity: { type: String, required: true, maxlength: 80 },
     deliveryState: { type: String, required: true, maxlength: 40 },
     deliveryStateShort: { type: String, maxlength: 4, default: '' },
-    deliveryZip: { type: String, required: true, maxlength: 10 },
+    deliveryZip: { type: String, maxlength: 10, default: '' },
     deliveryLat: { type: Number, default: null },
     deliveryLng: { type: Number, default: null },
 

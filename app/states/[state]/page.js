@@ -14,11 +14,11 @@ import BrokerNote from '@/components/BrokerNote';
 import { getStateBySlug, originStates } from '@/data/states';
 import { getRoutesByOrigin } from '@/data/routes';
 import { getDestinationBySlug } from '@/data/destinations';
+import { staticOriginStateSlugs, templatePageRobots } from '@/data/indexable';
 
 export function generateStaticParams() {
-  const staticSlugs = new Set(['new-york', 'new-jersey', 'pennsylvania', 'massachusetts', 'connecticut', 'maryland', 'ohio', 'virginia']);
   return originStates
-    .filter((s) => !staticSlugs.has(s.slug))
+    .filter((s) => !staticOriginStateSlugs.has(s.slug))
     .map((s) => ({ state: s.slug }));
 }
 
@@ -31,9 +31,10 @@ export async function generateMetadata({ params }) {
     .filter(Boolean)
     .join(', ');
   return {
-    title: `${state.name} Snowbird Car Shipping — Ship to ${destList}`,
+    title: `${state.name} Snowbird Car Shipping`,
     description: `Snowbird auto transport from ${state.name} to popular winter destinations including ${destList}. Seasonal pricing, transit times and coordinated pickup.`,
-    alternates: { canonical: `/states/${state.slug}` }
+    alternates: { canonical: `/states/${state.slug}` },
+    robots: templatePageRobots
   };
 }
 

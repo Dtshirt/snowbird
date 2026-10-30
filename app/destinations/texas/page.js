@@ -294,9 +294,9 @@ export default function TexasCarShippingPage() {
               </p>
             </div>
             <div className="rounded-lg border-l-4 border-brand-gold bg-white p-5">
-              <h3 className="font-display text-lg font-bold text-brand-navy">Expedited (guaranteed pickup)</h3>
+              <h3 className="font-display text-lg font-bold text-brand-navy">Expedited (priority pickup)</h3>
               <p className="mt-2 text-sm text-slate-700 leading-relaxed">
-                A locked pickup date rather than a 3- to 5-day window. Adds $150 to $400 to the base rate. Worth it when a lease start, closing, or PCS report date is fixed.
+                Priority dispatch for a specific pickup date rather than a 3- to 5-day window. Dates are still targets, not guarantees. Adds $150 to $400 to the base rate. Worth it when a lease start, closing, or PCS report date is fixed.
               </p>
             </div>
             <div className="rounded-lg border-l-4 border-brand-gold bg-white p-5">

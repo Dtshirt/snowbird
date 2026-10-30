@@ -117,7 +117,7 @@ export const routes = [
     distanceMiles: 1000,
     transitDays: '3–5 days',
     priceLow: 800,
-    priceHigh: 1350,
+    priceHigh: 1400,
     popularPairs: [
       ['Baltimore, MD', 'Orlando, FL'],
       ['Bethesda, MD', 'Naples, FL']
@@ -135,9 +135,9 @@ export const routes = [
     destination: 'Florida',
     destinationSlug: 'florida',
     distanceMiles: 850,
-    transitDays: '2–4 days',
-    priceLow: 750,
-    priceHigh: 1250,
+    transitDays: '2–5 days',
+    priceLow: 650,
+    priceHigh: 1375,
     popularPairs: [
       ['Richmond, VA', 'Jacksonville, FL'],
       ['Virginia Beach, VA', 'Fort Lauderdale, FL']
@@ -156,8 +156,8 @@ export const routes = [
     destinationSlug: 'florida',
     distanceMiles: 1150,
     transitDays: '3–6 days',
-    priceLow: 900,
-    priceHigh: 1500,
+    priceLow: 825,
+    priceHigh: 1575,
     popularPairs: [
       ['Columbus, OH', 'Tampa, FL'],
       ['Cleveland, OH', 'Naples, FL']

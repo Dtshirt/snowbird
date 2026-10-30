@@ -96,10 +96,10 @@ export default function Footer() {
         <div className="mt-12 border-t border-white/10 pt-6 text-xs text-slate-400 md:flex md:items-center md:justify-between">
           <p>© {year} {site.parent}. All rights reserved.</p>
           <div className="mt-3 flex flex-wrap gap-4 md:mt-0">
-            <Link href="/#terms" className="hover:text-white">Terms &amp; Conditions</Link>
-            <Link href="/#privacy" className="hover:text-white">Privacy Policy</Link>
-            <Link href="/#shipping-policy" className="hover:text-white">Shipping Policy</Link>
-            <Link href="/#company" className="hover:text-white">Broker Info</Link>
+            <Link href="/about" className="hover:text-white">About Us</Link>
+            <Link href="/about#how-we-work" className="hover:text-white">Broker Info</Link>
+            <Link href="/contact" className="hover:text-white">Contact</Link>
+            <Link href="/privacy-policy" className="hover:text-white">Privacy Policy</Link>
           </div>
         </div>
       </div>

@@ -30,9 +30,9 @@ export const resources = [
     slug: 'snowbird-car-shipping-cost',
     title: 'How Much Does Snowbird Car Shipping Cost?',
     description:
-      'A realistic look at what snowbirds should expect to pay for auto transport in both directions of the season.',
+      'What snowbirds typically pay to ship a car to Florida, by starting state, open vs enclosed, and what moves the price up or down.',
     readingTime: '8 min read',
-    updated: '2026-09-10',
+    updated: '2026-10-31',
     category: 'Cost'
   },
   {

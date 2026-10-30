@@ -45,7 +45,7 @@ const faqs = [
   },
   {
     q: 'What is the mice risk and how do I prevent it?',
-    a: 'Mice can enter through vents or small gaps and nest in air filters, insulation, or wiring harnesses. Prevention: block exterior vent intakes with steel wool or dryer sheets, store the car with no food scraps, and place peppermint-oil sachets inside. Dryer sheets lose scent after 2 to 3 months. [INSERT EXPERIENCE]'
+    a: 'Mice can enter through vents or small gaps and nest in air filters, insulation, or wiring harnesses. Prevention: block exterior vent intakes with steel wool or dryer sheets, store the car with no food scraps, and place peppermint-oil sachets inside. Dryer sheets lose scent after 2 to 3 months.'
   },
   {
     q: 'Should I start the car once a month during winter if I am gone?',

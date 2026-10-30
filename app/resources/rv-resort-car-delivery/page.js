@@ -25,7 +25,7 @@ const faqs = [
   },
   {
     q: 'My Rio Grande Valley park gate is unmanned on weekends. Does the driver need a code?',
-    a: 'Yes. Call the resort office during business hours to get a weekend access code or a gate-remote number. Share the code with your dispatcher as part of the booking notes. [INSERT EXPERIENCE]'
+    a: 'Yes. Call the resort office during business hours to get a weekend access code or a gate-remote number. Share the code with your dispatcher as part of the booking notes.'
   },
   {
     q: 'What if my resort has no cell service inside the gates?',

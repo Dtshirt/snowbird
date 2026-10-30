@@ -15,7 +15,7 @@ const defaultFaqs = [
   },
   {
     q: 'Is my vehicle insured during transport?',
-    a: 'Every motor carrier we work with maintains active cargo insurance as required by federal regulations. You can request a copy of the carrier\'s certificate of insurance before pickup.'
+    a: 'Every motor carrier we work with must carry active cargo insurance as a condition of hauling for us. You can request a copy of the carrier\'s certificate of insurance before pickup.'
   },
   {
     q: 'What is the difference between open and enclosed transport?',

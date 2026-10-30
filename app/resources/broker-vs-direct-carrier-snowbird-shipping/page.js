@@ -21,7 +21,7 @@ const faqs = [
   },
   {
     q: 'How do I know if a broker is legit?',
-    a: 'Check their MC number and surety bond on the FMCSA website (fmcsa.dot.gov). Reputable snowbird brokers hold a $75,000 surety bond, active MC authority, and 100+ customer reviews across Google, BBB, and Transport Reviews. Verify with FMCSA directly.'
+    a: 'Check their MC number and surety bond on the FMCSA website (fmcsa.dot.gov). A licensed broker holds active broker authority and a $75,000 surety bond or trust fund. Verify both with FMCSA directly, and read recent reviews before you book.'
   },
   {
     q: 'Is a direct carrier always cheaper than a broker?',
@@ -29,7 +29,7 @@ const faqs = [
   },
   {
     q: 'What is the broker surety bond and why does it matter?',
-    a: 'Federal law requires freight brokers to hold a $75,000 surety bond. If a broker goes bankrupt or defaults, the bond pays claims from unpaid carriers and customers. A broker without an active bond is not licensed to operate. [INSERT: link to FMCSA bond lookup]'
+    a: 'Federal law requires freight brokers to hold a $75,000 surety bond. If a broker goes bankrupt or defaults, the bond pays claims from unpaid carriers and customers. A broker without an active bond is not licensed to operate. You can check a broker bond on the FMCSA Licensing and Insurance public website.'
   },
   {
     q: 'Does the broker or the carrier handle insurance claims?',
@@ -41,7 +41,7 @@ const faqs = [
   },
   {
     q: 'If I pick a direct carrier, how do I handle backup if their truck breaks down?',
-    a: 'Direct carriers have one truck or a small fleet. If their truck breaks down, you wait. Brokers have a network of 1,000+ carriers to pull from — if one falls through, they re-dispatch. On a time-sensitive snowbird shipment, broker resilience matters.'
+    a: 'Direct carriers have one truck or a small fleet. If their truck breaks down, you wait. A broker can offer your load to many carriers — if one falls through, they re-dispatch. On a time-sensitive snowbird shipment, broker resilience matters.'
   },
   {
     q: 'Can I ask the broker which carrier was assigned to my load?',
@@ -53,7 +53,7 @@ const faqs = [
   },
   {
     q: 'If my carrier damages my car, is the broker legally responsible?',
-    a: 'Legally, the carrier is responsible — their cargo insurance pays. Practically, your broker is responsible for making the claim right. Pick a broker that explicitly says they advocate for you in claims. [INSERT EXPERIENCE]'
+    a: 'Legally, the carrier is responsible — their cargo insurance pays. Practically, your broker is responsible for making the claim right. Pick a broker that explicitly says they advocate for you in claims.'
   }
 ];
 
@@ -110,7 +110,7 @@ export default function Page() {
         Brokers win on reliability for most snowbird shipments:
       </p>
       <ul>
-        <li>Brokers have 1,000+ carriers to re-dispatch if the first one falls through</li>
+        <li>Brokers can re-dispatch to another carrier if the first one falls through</li>
         <li>Brokers absorb scheduling conflicts across their network</li>
         <li>Direct carriers have one fleet — if their truck breaks down, you wait</li>
       </ul>

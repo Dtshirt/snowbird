@@ -1,0 +1,700 @@
+<title>Snowbird SEO Audit</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;800&family=IBM+Plex+Mono:wght@400;500&family=Public+Sans:ital,wght@0,400;0,600;0,700;1,400&display=swap">
+<style>
+/* Layout: one reading column (≈70ch) with full-width table bands that scroll on their own. Bill-of-lading vernacular: lane codes, severity stripes, mono for URLs and regs. */
+:root {
+  --bg: #f7f8fa;
+  --surface: #ffffff;
+  --fg: #142033;
+  --muted: #55627a;
+  --line: #d9dee7;
+  --navy: #0b2545;
+  --sun: #b7791f;
+  --sun-soft: #fbf1df;
+  --crit: #b42318; --crit-soft: #fde8e6;
+  --high: #b54708; --high-soft: #fdeedd;
+  --med: #8a6d00; --med-soft: #fbf5d6;
+  --low: #3e6b4f; --low-soft: #e5f2ea;
+  --ok: #1f7a4d; --ok-soft: #e3f4ea;
+  --info: #2c5d93; --info-soft: #e5eef8;
+  --display: "Archivo", "Arial Narrow", Arial, sans-serif;
+  --body: "Public Sans", "Segoe UI", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e1520; --surface: #151f2e; --fg: #e6ebf3; --muted: #9aa8bf; --line: #2a3850; --navy: #9cc0ec; --sun: #e7b25c; --sun-soft: #3a2c14;
+    --crit: #ff8a7d; --crit-soft: #3d1a17; --high: #ffab6b; --high-soft: #3b2412; --med: #e9cf5d; --med-soft: #33300f; --low: #8fcca6; --low-soft: #17301f;
+    --ok: #7fd3a4; --ok-soft: #133224; --info: #93bdf0; --info-soft: #172a42; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e1520; --surface: #151f2e; --fg: #e6ebf3; --muted: #9aa8bf; --line: #2a3850; --navy: #9cc0ec; --sun: #e7b25c; --sun-soft: #3a2c14;
+  --crit: #ff8a7d; --crit-soft: #3d1a17; --high: #ffab6b; --high-soft: #3b2412; --med: #e9cf5d; --med-soft: #33300f; --low: #8fcca6; --low-soft: #17301f;
+  --ok: #7fd3a4; --ok-soft: #133224; --info: #93bdf0; --info-soft: #172a42; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font: 16px/1.6 var(--body); padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.wrap { max-width: 1120px; margin: 0 auto; padding-block: 40px 96px; }
+.col { max-width: 72ch; }
+h1, h2, h3 { font-family: var(--display); color: var(--navy); text-wrap: balance; line-height: 1.15; margin: 0; }
+h1 { font-size: clamp(2rem, 4.5vw, 3rem); font-weight: 800; letter-spacing: -0.01em; }
+h2 { font-size: 1.6rem; font-weight: 800; margin-top: 64px; padding-top: 16px; border-top: 2px solid var(--navy); scroll-margin-top: 16px; }
+h3 { font-size: 1.15rem; font-weight: 600; margin-top: 28px; }
+p, li { margin: 0; }
+section > * + *, .col > * + * { margin-top: 14px; }
+a { color: var(--info); }
+code, .mono { font-family: var(--mono); font-size: 0.88em; }
+.eyebrow { font: 600 0.72rem/1 var(--body); letter-spacing: 0.12em; text-transform: uppercase; color: var(--sun); }
+.deliv { font: 500 0.75rem/1 var(--mono); color: var(--muted); margin-left: 8px; letter-spacing: 0; text-transform: none; }
+.lede { font-size: 1.12rem; color: var(--muted); max-width: 70ch; }
+.meta-row { display: flex; flex-wrap: wrap; gap: 8px 20px; font: 0.85rem/1.4 var(--mono); color: var(--muted); }
+ul.plain { list-style: none; padding: 0; }
+ul.bul { padding-left: 1.2em; }
+ul.bul li + li, ol li + li { margin-top: 6px; }
+.toc { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 6px 24px; padding: 18px 20px; background: var(--surface); border: 1px solid var(--line); border-radius: 6px; font-size: 0.93rem; }
+.toc a { color: var(--fg); text-decoration: none; }
+.toc a:hover, .toc a:focus-visible { color: var(--info); text-decoration: underline; }
+.callout { padding: 16px 18px; border-radius: 6px; background: var(--sun-soft); border-left: 4px solid var(--sun); }
+.callout.crit { background: var(--crit-soft); border-left-color: var(--crit); }
+.callout.ok { background: var(--ok-soft); border-left-color: var(--ok); }
+.verdict { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px; margin-top: 24px; }
+.verdict > div { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 14px 16px; min-width: 0; }
+.verdict .k { font: 600 0.72rem/1.2 var(--body); letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+.verdict .v { font: 800 1.6rem/1.2 var(--display); color: var(--navy); margin-top: 6px; font-variant-numeric: tabular-nums; }
+.verdict .s { font-size: 0.86rem; color: var(--muted); margin-top: 4px; }
+.tbl { overflow-x: auto; margin-top: 16px; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: 0.88rem; }
+th, td { text-align: left; vertical-align: top; padding: 9px 12px; border-bottom: 1px solid var(--line); }
+th { font: 600 0.72rem/1.3 var(--body); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); background: var(--bg); position: sticky; top: 0; }
+tr:last-child td { border-bottom: 0; }
+td.n { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+td.u, td .u { font-family: var(--mono); font-size: 0.82rem; white-space: nowrap; }
+td.note { color: var(--muted); min-width: 260px; }
+.sev, .st, .act { display: inline-block; font: 600 0.7rem/1 var(--body); letter-spacing: 0.06em; text-transform: uppercase; padding: 4px 7px; border-radius: 3px; white-space: nowrap; }
+.sev.crit { background: var(--crit-soft); color: var(--crit); } .sev.high { background: var(--high-soft); color: var(--high); }
+.sev.med { background: var(--med-soft); color: var(--med); } .sev.low { background: var(--low-soft); color: var(--low); }
+.st.fixed { background: var(--ok-soft); color: var(--ok); } .st.owner { background: var(--sun-soft); color: var(--sun); } .st.plan { background: var(--info-soft); color: var(--info); }
+.act.rewrite { background: var(--high-soft); color: var(--high); } .act.remove { background: var(--crit-soft); color: var(--crit); } .act.merge { background: var(--med-soft); color: var(--med); }
+.act.new { background: var(--ok-soft); color: var(--ok); } .act.improve { background: var(--info-soft); color: var(--info); } .act.hold { background: var(--bg); color: var(--muted); border: 1px solid var(--line); } .act.keep { background: var(--low-soft); color: var(--low); }
+tr.sev-crit td:first-child { box-shadow: inset 4px 0 0 var(--crit); } tr.sev-high td:first-child { box-shadow: inset 4px 0 0 var(--high); }
+tr.sev-med td:first-child { box-shadow: inset 4px 0 0 var(--med); } tr.sev-low td:first-child { box-shadow: inset 4px 0 0 var(--low); }
+.lane { font-family: var(--mono); font-size: 0.82rem; white-space: nowrap; }
+.filters { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 16px; font-size: 0.9rem; }
+.filters select { font: inherit; padding: 6px 8px; border: 1px solid var(--line); border-radius: 4px; background: var(--surface); color: var(--fg); }
+.filters select:focus-visible { outline: 2px solid var(--info); outline-offset: 2px; }
+.count { color: var(--muted); font-variant-numeric: tabular-nums; }
+.qs { counter-reset: q; list-style: none; padding: 0; display: grid; gap: 10px; }
+.qs li { counter-increment: q; background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 12px 14px 12px 52px; position: relative; }
+.qs li::before { content: counter(q); position: absolute; left: 14px; top: 12px; width: 26px; height: 26px; border-radius: 50%; background: var(--navy); color: var(--bg); font: 600 0.8rem/26px var(--body); text-align: center; }
+.qs .why { display: block; color: var(--muted); font-size: 0.88rem; margin-top: 4px; }
+.qs li.done { border-color: var(--ok); }
+.qs li.done::before { content: "\2713"; background: var(--ok); }
+.phase { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; margin-top: 16px; }
+.phase > div { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 16px; min-width: 0; }
+.phase h3 { margin-top: 0; }
+.phase ul { padding-left: 1.1em; font-size: 0.92rem; }
+.phase li + li { margin-top: 6px; }
+pre.mermaid { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 16px; overflow-x: auto; }
+.src { font-size: 0.85rem; color: var(--muted); }
+.src a { word-break: break-all; }
+footer { margin-top: 72px; padding-top: 16px; border-top: 1px solid var(--line); color: var(--muted); font-size: 0.85rem; }
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
+</style>
+
+<div class="wrap">
+<header class="col">
+  <div class="eyebrow">snowbird.carshippinghub.com · SEO, technical &amp; CRO audit</div>
+  <h1 style="margin-top:10px">Snowbird SEO Audit</h1>
+  <p class="lede" style="margin-top:14px">Why the site has about 12 indexed pages and no impressions, what was wrong with it, what has already been fixed on a branch, and what to build next to turn organic search into quote requests.</p>
+  <div class="meta-row" style="margin-top:14px"><span>Audited 30 Oct 2026 · updated 31 Oct</span><span>Site live since 16 Oct 2026</span><span>Next.js 15 · nginx · Ubuntu</span><span>Branch: seo/p0-audit-fixes</span></div>
+</header>
+
+<nav class="toc" aria-label="Contents" style="margin-top:28px">
+  <a href="#summary">Executive summary</a>
+  <a href="#diagnosis">Why there are no impressions</a>
+  <a href="#fixed">Fixed on the branch</a>
+  <a href="#owner">Decisions only you can make</a>
+  <a href="#technical">Technical SEO report</a>
+  <a href="#keywords">Keyword research</a>
+  <a href="#competitors">Competitors &amp; SERPs</a>
+  <a href="#architecture">Architecture &amp; keyword map</a>
+  <a href="#inventory">URL inventory &amp; content audit</a>
+  <a href="#newcontent">New content plan</a>
+  <a href="#linking">Internal linking</a>
+  <a href="#onpage">On-page targets</a>
+  <a href="#cro">Conversion &amp; tracking</a>
+  <a href="#authority">Authority building</a>
+  <a href="#plan">30/60/90-day plan</a>
+  <a href="#kpis">KPI dashboard</a>
+  <a href="#deploy">Deploy &amp; verify guide</a>
+</nav>
+
+<section id="summary">
+  <h2>Executive summary <span class="deliv">Deliverable 1</span></h2>
+  <div class="col">
+    <p>Google can reach every page, so this is not a blocked-crawler problem. Every one of the 92 URLs returns HTTP 200 with a correct self-canonical and <code>index, follow</code>. The problems are in what Google finds when it gets there, and in what customers find when they try to get a quote.</p>
+    <div class="callout crit">
+      <p><strong>Two problems were costing you leads and trust right now.</strong> The quote form rejected anyone who typed a city like "Rochester, NY" and picked the matching suggestion, which is how most people fill it in; I reproduced this on the live site. And 7 of the 8 main route pages showed a made-up broker number, "MC #1234567", next to a placeholder phone number, (800) 555-1234. Both are fixed on the branch.</p>
+    </div>
+  </div>
+  <div class="verdict">
+    <div><div class="k">Crawlable URLs</div><div class="v">92</div><div class="s">All 200, self-canonical, indexable before the fix</div></div>
+    <div><div class="k">Near-duplicate template pages</div><div class="v">45 of 92</div><div class="s">8–18% of their text is unique to the page</div></div>
+    <div><div class="k">Northbound route pages</div><div class="v">0</div><div class="s">Despite clear search demand for "Florida to …"</div></div>
+    <div><div class="k">Fabricated trust items found</div><div class="v">6 kinds</div><div class="s">Fake MC#, placeholder phone, invented reviews and stats</div></div>
+  </div>
+  <div class="col" style="margin-top:24px">
+    <h3>Biggest growth opportunities</h3>
+    <ul class="bul">
+      <li><strong>Northbound routes.</strong> The brand is built for snowbirds going south and returning home, so this is core, not optional. Google Autocomplete shows people searching "ship car from Florida to New York", "…to New Jersey", "…to Michigan", "…to Massachusetts", "…to Ohio". You have no pages for any of them. The spring return (March–May 2027) is your first realistic organic season, so these pages need to be live by January.</li>
+      <li><strong>Cost answers.</strong> The most common query shape is "how much does it cost to ship a car from X to Florida". Your cost guide is 438 words.</li>
+      <li><strong>Amtrak Auto Train comparison.</strong> Snowbirds actively compare shipping against the Auto Train. You have no page on it.</li>
+      <li><strong>A weak snowbird SERP.</strong> "Snowbird car shipping" results are broker blog posts and low-quality pages on pages.dev, helpscoutdocs and dev.to, with no dominant specialist. A credible dedicated site can compete there.</li>
+    </ul>
+  </div>
+</section>
+
+<section id="diagnosis">
+  <h2>Why only ~12 pages are indexed and impressions are zero</h2>
+  <div class="col">
+    <p>Indexing and ranking are different problems, so I've separated them. I did not have Search Console access; the "about 12 indexed" and "33 crawl requests" figures are yours. Everything else below was measured.</p>
+    <h3>Ruled out (checked and working)</h3>
+    <ul class="bul">
+      <li>Googlebot gets HTTP 200 on every URL. Server is plain nginx with no Cloudflare or bot challenge.</li>
+      <li><code>robots.txt</code> allows everything except <code>/api/</code> and points to the sitemap.</li>
+      <li>HTTP redirects to HTTPS with a 301; trailing slashes 308 to the clean URL; no www duplicate host.</li>
+      <li>Every page has a correct self-referencing canonical and <code>index, follow</code>.</li>
+      <li>Content, headings and links are server-rendered HTML with real <code>&lt;a href&gt;</code> links. JavaScript is not hiding anything.</li>
+      <li>Pages are fast enough: 33 KB of compressed HTML, layout shift 0.005, no heavy images.</li>
+    </ul>
+    <h3>Why Google is indexing so little</h3>
+    <ol>
+      <li><strong>Half the site was near-duplicate templates.</strong> 19 route pages, 22 city pages and 4 state pages share 82–92% of their text with each other. Google typically leaves pages like these as "Crawled – currently not indexed" and spends less crawl on a site that has many of them.</li>
+      <li><strong>Very little discovery signal.</strong> The site is two weeks old on a new subdomain, and your own parent site, carshippinghub.com, does not link to it at all. Low crawl demand matches the ~33 crawl requests you saw.</li>
+    </ol>
+    <h3>Why indexed pages get no impressions</h3>
+    <ol>
+      <li><strong>Competition.</strong> Route queries are dominated by established national brokers and data sites (MoveBuddha, FreightWaves, AmeriFreight, SGT, Ship A Car Inc). A two-week-old subdomain with no links rarely shows on page one or two for those yet.</li>
+      <li><strong>Vocabulary mismatch.</strong> The site leans on "seasonal auto transport" and "ship car to Florida for winter". Autocomplete returned no suggestions for those phrases. People type "ship car from New Jersey to Florida" and "how much does it cost to ship a car from NY to Florida".</li>
+      <li><strong>Missing half the demand.</strong> No northbound pages exist.</li>
+      <li><strong>Trust signals that a quality reviewer would flag.</strong> Invented reviews, a fake MC number and placeholder phone numbers are exactly what Google's quality guidelines tell raters to look for on a site handling people's cars and money.</li>
+      <li><strong>Timing.</strong> New pages often take weeks to earn impressions. No one can promise a timeframe, but the fixes above remove the reasons Google has to hold back.</li>
+    </ol>
+  </div>
+</section>
+
+<section id="fixed">
+  <h2>Fixed on branch <code>seo/p0-audit-fixes</code></h2>
+  <div class="col"><p>Nothing is deployed and nothing is committed. Live <code>master</code> is untouched. The production build passes, and each fix was checked in the rendered HTML of a local production build.</p></div>
+  <div class="tbl"><table>
+    <thead><tr><th>Fix</th><th>Files</th><th>How it was verified</th></tr></thead>
+    <tbody>
+      <tr class="sev-crit"><td><strong>Quote form accepts city and state.</strong> ZIP is now optional; typed "City, ST" works without picking a suggestion; works if Google Places fails to load.</td><td class="u">GooglePlacesInput.jsx<br>QuoteForm.jsx<br>lib/validators.js<br>models/Quote.js<br>lib/usStates.js</td><td>Browser: "Rochester, NY" → "Naples, FL" now reaches step 2 (blocked on live site). Typed "Detroit, MI" and "Fort Myers, Florida 33901" pass; "asdf" is rejected with a clear message. Server validator unit-tested on four cases. Full submission not run, to avoid writing to your production database.</td></tr>
+      <tr class="sev-crit"><td><strong>Removed fake "MC #1234567"</strong> from 7 route pages and replaced with "Arranged through a licensed broker partner".</td><td class="u">app/routes/*-to-florida</td><td>Not present in any rendered page.</td></tr>
+      <tr class="sev-crit"><td><strong>Removed placeholder (800) 555-1234</strong> on 8 route pages. All pages now use your confirmed number, (888) 706-8784, from <code>data/site.js</code>.</td><td class="u">app/routes/*-to-florida<br>data/site.js</td><td>One <code>tel:</code> number site-wide, also in the schema.</td></tr>
+      <tr class="sev-high"><td><strong>Your answers applied (31 Oct).</strong> The 10% deposit is stated as 100% refundable on 5 pages. The Privacy Policy limits sharing to the carrier and says you don't sell quote requests. The consent label now shows the exact wording saved with each quote.</td><td class="u">app/page.js<br>app/about<br>HomeSEOContent.jsx<br>2 resources<br>app/privacy-policy<br>QuoteForm.jsx</td><td>Fresh production build; consent label checked at step 3 of the form in the browser.</td></tr>
+      <tr class="sev-crit"><td><strong>Removed invented testimonials</strong> ("our third season using Snowbird Car Shipping", on a brand launched 16 Oct 2026).</td><td class="u">app/page.js<br>Testimonials.jsx (deleted)</td><td>Section gone from homepage.</td></tr>
+      <tr class="sev-high"><td><strong>45 template pages set to <code>noindex, follow</code></strong> and dropped from the sitemap. Pages stay live and keep passing links. Adding a slug to <code>data/indexable.js</code> when its page is rebuilt makes it indexable again.</td><td class="u">data/indexable.js<br>app/sitemap.js<br>4 dynamic templates</td><td>Sitemap: 93 entries (1 duplicate) → 49 unique. <code>/routes/michigan-to-florida</code> renders noindex; <code>/routes/new-york-to-florida</code> renders index.</td></tr>
+      <tr class="sev-high"><td><strong>Created About, Contact and Privacy Policy pages.</strong> Footer links to Terms, Privacy, Shipping Policy and Broker Info all pointed to non-existent homepage anchors.</td><td class="u">app/about<br>app/contact<br>app/privacy-policy<br>Footer.jsx</td><td>All 200, mobile layout checked at 375px with no overflow.</td></tr>
+      <tr class="sev-high"><td><strong>Conversion tracking ready.</strong> GA4 loads only when <code>NEXT_PUBLIC_GA_ID</code> is set. Events: <code>quote_step_complete</code>, <code>generate_lead</code>, <code>phone_click</code>.</td><td class="u">lib/analytics.js<br>Analytics.jsx<br>QuoteForm.jsx</td><td>Build passes; inert until the ID is added.</td></tr>
+      <tr class="sev-high"><td><strong>Broker disclosure rewritten</strong> to match how you actually operate: a partner licensed broker arranges, independent carriers haul. Removed "since 2011" and "we are a licensed broker".</td><td class="u">data/site.js<br>TrustBar.jsx<br>HomeSEOContent.jsx</td><td>Rendered footer, trust bar and broker note.</td></tr>
+      <tr class="sev-high"><td><strong>Removed contradictions and unsupported claims:</strong> "no upfront deposit" vs "10% deposit" on the same page; "guaranteed pickup" on 11 pages vs your own "dates are not guaranteed" FAQ; "round-trip runs 10–15% below" on 8 pages vs your own "not a guaranteed discount"; "cargo insurance as required by federal regulations" (not true for car haulers since 2011).</td><td class="u">app/page.js<br>FAQ.jsx<br>11 hub pages<br>8 route pages</td><td>Strings absent in rendered HTML.</td></tr>
+      <tr class="sev-high"><td><strong>Removed 19 visible "[INSERT …]" placeholders</strong> and invented statistics ("10x the enclosed carrier supply", on-time "85% → 70–75%", "1,000+ carriers", "100+ reviews") from 13 articles. These were also inside FAQ schema.</td><td class="u">app/resources/*</td><td>No matches anywhere in app, components or data.</td></tr>
+      <tr class="sev-med"><td><strong>Organization schema fixed.</strong> Was typed <code>AutoRepair</code> and injected by client JavaScript. Now <code>Organization</code> + <code>WebSite</code>, server-rendered.</td><td class="u">app/layout.js</td><td>Present in raw HTML on every page.</td></tr>
+      <tr class="sev-med"><td><strong>Route titles de-duplicated.</strong> "New York to Florida Car Shipping | Snowbird Auto Transport | Snowbird Car Shipping" (82 chars) → "New York to Florida Car Shipping | Snowbird Car Shipping" (56).</td><td class="u">8 route pages<br>3 templates</td><td>Rendered titles 50–61 chars.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="owner">
+  <h2>Decisions only you can make <span class="deliv">1, 3, 4 answered 31 Oct</span></h2>
+  <div class="col"><p>I did not guess at any of these. Questions 1, 3 and 4 are answered and applied on the branch. Question 2 has one point left for counsel. The rest can follow the deploy.</p></div>
+  <ol class="qs" style="margin-top:16px">
+    <li class="done"><strong>Phone confirmed: (888) 706-8784.</strong> It replaces (888) 555-7482 on every page, every Call button and the schema.<span class="why">Set once in <code>data/site.js</code>.</span></li>
+    <li><strong>The partner broker's name stays off the site</strong>, per your agreement. That can work as long as the name you advertise under is covered by the registration. <strong>For counsel:</strong> 49 CFR §371.7(a) bars a property broker from advertising "in any name other than that in which its registration is issued". The usual way to meet this while keeping the partner private is to have "Snowbird Car Shipping" (and "CarShippingHub") listed as trade names on the partner's FMCSA registration. Please confirm that is in place.<span class="why">§371.7(b) also requires advertising to show broker status; the site's broker note does that. No federal rule requires a property broker to show its MC number on a website (§371.107 covers household-goods brokers).</span></li>
+    <li class="done"><strong>Quote details go only to the carrier.</strong> The Privacy Policy now says so and states that you do not sell quote requests or pass them to other brokers, lead buyers or marketing companies.<span class="why">If your partner broker's staff see customer details while arranging a shipment, the policy should cover them too. It can do that without naming them.</span></li>
+    <li class="done"><strong>Deposit confirmed: 10% at booking, 100% refundable.</strong> Now stated in the homepage hero and benefits, the About page, the cost guide and the hidden-fees article.<span class="why">"Balance at delivery" is kept as your site already said it.</span></li>
+    <li><strong>The consent checkbox is pre-checked and required.</strong> I recommend unchecked by default.<span class="why">A pre-checked box is weak evidence of consent for calls and texts under the TCPA, and auto transport lead forms are a frequent target of TCPA suits. One line in <code>QuoteForm.jsx</code>; your counsel's call.</span></li>
+    <li><strong>Do you ship from Canada?</strong><span class="why">Autocomplete for "snowbird car shipping" leans Canadian (Toronto, Ontario). The homepage used to say you serve Canada; I removed that until you confirm, since cross-border moves involve customs.</span></li>
+    <li><strong>Where do the price ranges on route pages come from?</strong><span class="why">They are presented as typical ranges. Checking them against your partner's real dispatch prices is the single most valuable accuracy improvement.</span></li>
+    <li><strong>Can carshippinghub.com link to this subdomain?</strong><span class="why">It's the one authority source you control. A nav or footer link plus a contextual link from any snowbird or Florida content would help discovery.</span></li>
+    <li><strong>Terms &amp; Conditions, cancellation, refund and damage-claim process.</strong><span class="why">I removed the dead links rather than invent policies. Send the real terms and I'll publish them.</span></li>
+    <li><strong>Real reviews.</strong> Do you have any from the partner broker or past snowbird customers, and on which platform?<span class="why">Only genuine, attributable reviews can go back on the site (the FTC rule on fake reviews has been in force since October 2024).</span></li>
+    <li><strong>A named expert</strong> who can review content (an ops lead or dispatcher).<span class="why">A real reviewer name and bio on guides is the strongest E-E-A-T signal available to you.</span></li>
+    <li><strong>GA4 measurement ID and Search Console access</strong> for monitoring.</li>
+  </ol>
+</section>
+
+<section id="technical">
+  <h2>Technical SEO report <span class="deliv">Deliverable 2</span></h2>
+  <div class="tbl"><table>
+    <thead><tr><th>Severity</th><th>Issue</th><th>Evidence</th><th>Fix</th><th>Status</th></tr></thead>
+    <tbody>
+      <tr class="sev-crit"><td><span class="sev crit">Critical</span></td><td>Quote form rejects city-level addresses</td><td>Live: "Rochester, NY, USA" → "Select a pickup address from the suggestions."</td><td>ZIP optional client + server + model; typed City, ST parsed</td><td><span class="st fixed">Fixed</span></td></tr>
+      <tr class="sev-crit"><td><span class="sev crit">Critical</span></td><td>Fabricated MC number</td><td>"MC #1234567" on 7 route pages</td><td>Removed</td><td><span class="st fixed">Fixed</span></td></tr>
+      <tr class="sev-crit"><td><span class="sev crit">Critical</span></td><td>Placeholder phone on route pages</td><td><code>tel:+18005551234</code> on 8 pages</td><td>Uses site phone</td><td><span class="st fixed">Fixed</span></td></tr>
+      <tr class="sev-crit"><td><span class="sev crit">Critical</span></td><td>Site phone was a placeholder</td><td>(888) 555-7482 on all pages</td><td>Owner confirmed (888) 706-8784; set in <code>data/site.js</code></td><td><span class="st fixed">Fixed</span></td></tr>
+      <tr class="sev-crit"><td><span class="sev crit">Critical</span></td><td>Invented testimonials</td><td>"third season" two weeks after launch</td><td>Removed</td><td><span class="st fixed">Fixed</span></td></tr>
+      <tr class="sev-high"><td><span class="sev high">High</span></td><td>Thin, near-duplicate template pages</td><td>45 URLs at 8–18% unique text; avg pairwise similarity 66% (routes), 73% (states)</td><td>noindex,follow + out of sitemap; rebuild priority ones</td><td><span class="st fixed">Fixed</span> <span class="st plan">Plan</span></td></tr>
+      <tr class="sev-high"><td><span class="sev high">High</span></td><td>No About, Contact or Privacy pages</td><td>Footer links → <code>/#privacy</code>, <code>/#terms</code> etc.</td><td>Pages created; Terms pending</td><td><span class="st fixed">Fixed</span> <span class="st owner">Owner</span></td></tr>
+      <tr class="sev-high"><td><span class="sev high">High</span></td><td>No analytics or conversion tracking</td><td>No GA4/GTM anywhere in the code</td><td>GA4 + 3 events, env-gated</td><td><span class="st owner">Needs ID</span></td></tr>
+      <tr class="sev-high"><td><span class="sev high">High</span></td><td>No northbound pages</td><td>All 27 routes are North → South</td><td>Build 6 P1 northbound routes</td><td><span class="st plan">Plan</span></td></tr>
+      <tr class="sev-high"><td><span class="sev high">High</span></td><td>Parent domain doesn't link here</td><td>0 links to the subdomain on carshippinghub.com</td><td>Add nav/footer + contextual link</td><td><span class="st owner">Owner</span></td></tr>
+      <tr class="sev-high"><td><span class="sev high">High</span></td><td>Contradictory and unsupported claims</td><td>Deposit, guaranteed pickup, round-trip discount, federal insurance rule, 19 [INSERT] tokens, invented stats</td><td>Rewritten or removed</td><td><span class="st fixed">Fixed</span></td></tr>
+      <tr class="sev-med"><td><span class="sev med">Medium</span></td><td>Wrong schema type, client-injected</td><td><code>AutoRepair</code> via <code>next/script</code></td><td>Organization + WebSite, SSR</td><td><span class="st fixed">Fixed</span></td></tr>
+      <tr class="sev-med"><td><span class="sev med">Medium</span></td><td>Sitemap quality</td><td>Duplicate URL; every lastmod = build time</td><td>Unique URLs; lastmod only where real</td><td><span class="st fixed">Fixed</span></td></tr>
+      <tr class="sev-med"><td><span class="sev med">Medium</span></td><td>Long titles</td><td>Routes 78–87 chars; hubs 75–82 chars</td><td>Routes fixed; hubs in on-page table</td><td><span class="st fixed">Partly</span></td></tr>
+      <tr class="sev-med"><td><span class="sev med">Medium</span></td><td>No routes hub</td><td>Nav and breadcrumbs link to <code>/#routes</code></td><td>Create <code>/routes</code> listing both directions</td><td><span class="st plan">Plan</span></td></tr>
+      <tr class="sev-med"><td><span class="sev med">Medium</span></td><td>Pre-checked consent box</td><td><code>consentGiven: true</code> default</td><td>Default to unchecked</td><td><span class="st owner">Legal</span></td></tr>
+      <tr class="sev-med"><td><span class="sev med">Medium</span></td><td>Google Maps JS on every page with a form</td><td>Loaded on mount; address fields disabled while it loads</td><td>Load on first focus, keep field typable</td><td><span class="st plan">Plan</span></td></tr>
+      <tr class="sev-med"><td><span class="sev med">Medium</span></td><td>Hand-built route pages resemble each other</td><td>Only 30–43% unique across the 8 pages</td><td>Route-specific FAQs, pickup notes, reverse-route section</td><td><span class="st plan">Plan</span></td></tr>
+      <tr class="sev-low"><td><span class="sev low">Low</span></td><td>Render-blocking Google Fonts stylesheet</td><td><code>&lt;link&gt;</code> in layout head</td><td>Switch to <code>next/font</code></td><td><span class="st plan">Plan</span></td></tr>
+      <tr class="sev-low"><td><span class="sev low">Low</span></td><td>Weakly linked articles</td><td>5 resources with 1 internal link in</td><td>Contextual links (see linking table)</td><td><span class="st plan">Plan</span></td></tr>
+      <tr class="sev-low"><td><span class="sev low">Low</span></td><td>Meta keywords, robots Host line</td><td>Ignored by Google</td><td>Harmless; leave</td><td>—</td></tr>
+    </tbody>
+  </table></div>
+  <p class="src" style="margin-top:10px">Core Web Vitals field data was not available: the keyless PageSpeed API hit its daily quota and the site is too new for CrUX. In-browser measurement showed layout shift 0.005 and 33 KB compressed HTML. Run PageSpeed Insights once after deploy.</p>
+</section>
+
+<section id="keywords">
+  <h2>Keyword research <span class="deliv">Deliverable 3</span></h2>
+  <div class="col">
+    <div class="callout"><p><strong>Data limits.</strong> No paid keyword tool or Search Console data was available, so this table has <strong>no search volumes, difficulty or CPC</strong>, and none are estimated. Demand evidence is real Google Autocomplete output (US, 30 Oct 2026): a phrase appearing there means people search it, not how often. Add Keyword Planner or Ahrefs data to set final priorities.</p></div>
+  </div>
+  <div class="tbl"><table>
+    <thead><tr><th>Cluster</th><th>Autocomplete evidence (examples)</th><th>Intent</th><th>Target URL</th><th>Priority</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Snowbird head terms</strong></td><td>snowbird car shipping · snowbird auto transport · snowbird vehicle shipping · snowbird car transport · car transport for snowbirds</td><td>Commercial</td><td class="u">/</td><td>P1</td></tr>
+      <tr><td><strong>Northbound routes</strong></td><td>ship car from florida to new york · …to nj · …to massachusetts · …to michigan · …to pennsylvania · car shipping from florida to ohio · cost to ship a car from florida to minnesota / illinois</td><td>Transactional</td><td class="u">/routes/florida-to-{state} (new)</td><td>P1</td></tr>
+      <tr><td><strong>Southbound routes</strong></td><td>new york to florida car shipping · shipping car to florida from nj / ohio · car shipping massachusetts to florida · michigan to florida car transport · car shipping illinois to florida · boston to florida car transport</td><td>Transactional</td><td class="u">/routes/{state}-to-florida</td><td>P1</td></tr>
+      <tr><td><strong>Cost questions</strong></td><td>how much does it cost to ship a car from ny to florida · how much to ship a car to florida from michigan · cost to ship car from nj to florida · shipping car to florida cost</td><td>Commercial</td><td>Route cost sections + <span class="u">/resources/snowbird-car-shipping-cost</span></td><td>P1</td></tr>
+      <tr><td><strong>Destination</strong></td><td>car shipping to florida · auto transport to florida · ship my car to florida · car shipping to arizona · cost to ship car to arizona · car shipping to texas · ship car to california</td><td>Commercial</td><td class="u">/destinations/{state}</td><td>P2</td></tr>
+      <tr><td><strong>Arizona lanes</strong></td><td>ship car from illinois to arizona · car shipping from michigan to arizona · ship car from arizona to michigan · car shipping washington to arizona</td><td>Transactional</td><td class="u">/routes/…-to-arizona, arizona-to-michigan (new)</td><td>P2</td></tr>
+      <tr><td><strong>Train alternative</strong></td><td>ship my car to florida by train · how to ship a car to florida by train · auto train vs driving · is the auto train worth it</td><td>Commercial investigation</td><td class="u">/resources/auto-train-vs-car-shipping (new)</td><td>P1</td></tr>
+      <tr><td><strong>City delivery</strong></td><td>car shipping naples fl · car transport naples fl · car shipping fort myers · car shipping sarasota fl · car shipping phoenix az · car transport scottsdale az</td><td>Transactional</td><td class="u">/destinations/{state}/{city}</td><td>P2</td></tr>
+      <tr><td><strong>Ship vs drive</strong></td><td>is it cheaper to ship a car or drive · is it better to ship or drive a car cross country</td><td>Commercial investigation</td><td class="u">/resources/ship-vs-drive-snowbird</td><td>P2</td></tr>
+      <tr><td><strong>Round trip &amp; enclosed</strong></td><td>round trip car shipping · round trip car transport · enclosed car transport florida · is enclosed car shipping worth it</td><td>Commercial</td><td class="u">/resources/round-trip-…, /resources/open-vs-enclosed-…</td><td>P3</td></tr>
+      <tr><td><strong>Canadian snowbirds</strong></td><td>snowbirds car shipping toronto · canadian snowbird car shipping · shipping car to florida from toronto · shipping car from ontario to florida</td><td>Transactional</td><td>Only if you serve Canada (question 6)</td><td>Owner</td></tr>
+      <tr><td><strong>No autocomplete signal</strong></td><td>seasonal car shipping · ship car to florida for winter · ship car or drive to florida · minnesota to arizona car shipping · arizona to minnesota · texas to minnesota</td><td>—</td><td>Don't build pages around these phrases</td><td>Skip</td></tr>
+    </tbody>
+  </table></div>
+  <div class="col">
+    <h3>Cannibalization to manage</h3>
+    <ul class="bul">
+      <li>Cost: <span class="u">/resources/snowbird-car-shipping-cost</span> owns "cost to ship a car to Florida"; the calculator owns "calculator"; <span class="u">why-peak-season-…</span> owns "why prices go up". Each must link to the others with those anchors.</li>
+      <li>Timing: <span class="u">when-to-ship-your-car-south-for-winter</span> (447 words) overlaps <span class="u">snowbird-shipping-calendar</span>. Merge with a 301, or expand into a clearly different page.</li>
+      <li>Beginner guides: <span class="u">first-time-snowbird-shipping</span>, <span class="u">snowbird-car-shipping-guide</span> and the prep checklist overlap. Give each one job: process, first-timer decisions, printable checklist.</li>
+    </ul>
+  </div>
+</section>
+
+<section id="competitors">
+  <h2>Competitors &amp; SERP analysis <span class="deliv">Deliverable 4</span></h2>
+  <div class="tbl"><table>
+    <thead><tr><th>Competitor</th><th>Where they show up</th><th>What they do well</th><th>Weakness</th><th>Your angle</th></tr></thead>
+    <tbody>
+      <tr><td><strong>MoveBuddha</strong></td><td>NY→FL and FL→NY cost queries</td><td>Programmatic state and city-pair pages with one specific price per pair</td><td>Generic, not snowbird-specific, no seasonal planning</td><td>Season-aware pricing in both directions</td></tr>
+      <tr><td><strong>FreightWaves Checkpoint</strong></td><td>FL→NY cost</td><td>Data-publisher authority, mileage and price ranges</td><td>Informational only, no service</td><td>Same clarity plus a quote path</td></tr>
+      <tr><td><strong>AmeriFreight</strong></td><td>State-to-state, both directions</td><td>Covers both directions, plus blog guides</td><td>Templated pages</td><td>Route-specific pickup and timing detail</td></tr>
+      <tr><td><strong>SGT Auto Transport</strong></td><td>Snowbird and NY↔FL guides</td><td>Large blog footprint</td><td>Blog-heavy, sales-led</td><td>Fewer, better commercial pages</td></tr>
+      <tr><td><strong>Ship A Car Inc</strong></td><td>Snowbird, NY→FL, Auto Train content</td><td>Covers the train comparison</td><td>Broad national focus</td><td>A dedicated, honest Auto Train comparison</td></tr>
+      <tr><td><strong>Navi, Safeeds, Sherpa, Nexus</strong></td><td>FL→NY route pages and guides</td><td>Off-peak pricing; Safeeds notes northbound prices fall in fall when trucks run empty north</td><td>Thin on snowbird logistics</td><td>Directional seasonality as core expertise</td></tr>
+      <tr><td><strong>Low-quality pages</strong> (pages.dev, helpscoutdocs, dev.to, Squarespace)</td><td>"snowbird car shipping"</td><td>—</td><td>Unbranded, thin</td><td>The head term is winnable with real trust signals</td></tr>
+    </tbody>
+  </table></div>
+  <div class="col">
+    <h3>Content gaps against competitors</h3>
+    <ul class="bul">
+      <li>Northbound route pages (all major competitors have them).</li>
+      <li>A single, clear cost table per route with open and enclosed by vehicle type.</li>
+      <li>An honest Amtrak Auto Train vs. shipping comparison (route coverage, total cost for two people plus the car, who it suits).</li>
+      <li>Directional pricing: why the same lane costs less when you ship against the snowbird flow.</li>
+      <li>Florida-side pickup logistics for the return trip: gated 55+ communities, condo garages, HOA truck rules.</li>
+    </ul>
+    <p class="src">Sources: <a href="https://www.movebuddha.com/car-shipping/fl/ny/" target="_blank" rel="noopener">MoveBuddha FL→NY</a>, <a href="https://movebuddha.com/car-shipping/ny/fl" target="_blank" rel="noopener">MoveBuddha NY→FL</a>, <a href="https://www.freightwaves.com/checkpoint/car-shipping/florida/new-york" target="_blank" rel="noopener">FreightWaves FL→NY</a>, <a href="https://www.amerifreight.net/florida-to-new-york-car-shipping" target="_blank" rel="noopener">AmeriFreight FL→NY</a>, <a href="https://sgtautotransport.com/autoblog/reasons-for-snowbird-car-shipping" target="_blank" rel="noopener">SGT snowbird</a>, <a href="https://www.shipacarinc.com/how-to-ship-a-car-from-new-york-to-florida/" target="_blank" rel="noopener">Ship A Car Inc NY→FL</a>, <a href="https://naviautotransport.com/routes/florida-to-new-york/" target="_blank" rel="noopener">Navi FL→NY</a>, <a href="https://safeedsautotransport.com/blogs/florida-to-new-york-car-shipping-cost-time-and-how-to-book" target="_blank" rel="noopener">Safeeds FL→NY</a>. SERP composition from a web search on 30 Oct 2026; not a rank-tracking measurement.</p>
+  </div>
+</section>
+
+<section id="architecture">
+  <h2>Architecture &amp; keyword-to-URL map <span class="deliv">Deliverable 5</span></h2>
+  <div class="col"><p>Keep the current URL patterns; they're clean and no URL changes are needed. Add a routes hub and the northbound lane under the same <code>/routes/{origin}-to-{destination}</code> pattern. Maximum depth stays at three clicks from the homepage.</p></div>
+  <pre class="mermaid">
+graph TD
+  H["Home"] --> R["Routes hub: /routes (new)"]
+  H --> D["Destinations: /destinations"]
+  H --> S["Origin states: /states/..."]
+  H --> C["Cost guide + calculator"]
+  R --> SB["Southbound: /routes/new-york-to-florida ..."]
+  R --> NB["Northbound: /routes/florida-to-new-york ... (new)"]
+  D --> DF["/destinations/florida"]
+  DF --> SB
+  DF --> NB
+  DF --> CITY["City pages: Naples, Fort Myers, Sarasota"]
+  S --> SB
+  S --> NB
+  SB <--> NB
+  C --> SB
+  C --> NB
+  RES["Resources: /resources/..."] --> SB
+  RES --> NB
+  </pre>
+  <div class="tbl"><table>
+    <thead><tr><th>Primary keyword</th><th>URL</th><th>Page job</th><th>Conversion goal</th></tr></thead>
+    <tbody>
+      <tr><td>snowbird car shipping</td><td class="u">/</td><td>Explain the service both ways, route to lanes</td><td>Quote form, call</td></tr>
+      <tr><td>snowbird car shipping routes</td><td class="u">/routes (new)</td><td>Every live lane, south and north</td><td>Click into a lane</td></tr>
+      <tr><td>{state} to florida car shipping</td><td class="u">/routes/{state}-to-florida</td><td>Cost, timing, fall booking</td><td>Quote form</td></tr>
+      <tr><td>florida to {state} car shipping</td><td class="u">/routes/florida-to-{state} (new)</td><td>Cost, timing, spring return, Florida pickup</td><td>Quote form</td></tr>
+      <tr><td>car shipping to florida</td><td class="u">/destinations/florida</td><td>Regions, popular origins, both directions</td><td>Lane click, quote</td></tr>
+      <tr><td>{state} snowbird car shipping</td><td class="u">/states/{state}</td><td>Origin hub: lanes out and home</td><td>Lane click, quote</td></tr>
+      <tr><td>cost to ship a car to florida</td><td class="u">/resources/snowbird-car-shipping-cost</td><td>Price tables by lane and vehicle</td><td>Calculator, quote</td></tr>
+      <tr><td>snowbird car shipping cost calculator</td><td class="u">/snowbird-car-shipping-cost-calculator</td><td>Instant estimate</td><td>Quote with estimate attached</td></tr>
+      <tr><td>auto train vs car shipping</td><td class="u">/resources/auto-train-vs-car-shipping (new)</td><td>Honest comparison</td><td>Quote for shipping-fit readers</td></tr>
+      <tr><td>car shipping naples fl</td><td class="u">/destinations/florida/naples</td><td>Delivery logistics in Naples</td><td>Quote form</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="inventory">
+  <h2>URL inventory &amp; content audit <span class="deliv">Deliverable 6</span></h2>
+  <div class="col">
+    <p>All 92 crawled URLs plus the 3 new pages. "Unique %" is the share of a page's six-word phrases that appear on no other page of the site. The full sheet, with titles, H1s, H2 counts, schema and outbound links, is in <code>seo-audit/url-inventory-2026-10-30.csv</code> in the project.</p>
+    <p><strong>Content quality, summarized.</strong> The hand-built hubs (4 destinations, 8 origin states) and the 23 articles are genuinely specific and readable. Their problems were invented numbers, placeholders and contradictions, now removed. The template pages fail on uniqueness. The 8 hand-built routes are solid but too similar to each other, and their price ranges need validating against real quotes. Nothing on the site yet shows first-hand experience; that has to come from you (real reviews, a named reviewer, real booking data).</p>
+  </div>
+  <div class="filters">
+    <label for="f-action">Show</label>
+    <select id="f-action">
+      <option value="all">All actions</option>
+      <option value="rewrite">Rewrite</option>
+      <option value="improve">Improve</option>
+      <option value="keep">Keep</option>
+      <option value="hold">Keep noindexed</option>
+      <option value="merge">Merge</option>
+      <option value="remove">Remove later</option>
+      <option value="new">New</option>
+    </select>
+    <span class="count" id="f-count" aria-live="polite"></span>
+  </div>
+  <div class="tbl" style="max-height:640px"><table id="inv">
+    <thead><tr><th>URL</th><th>Type</th><th>Words</th><th>Unique</th><th>Links in</th><th>Indexability</th><th>Action</th><th>Primary keyword</th><th>Notes</th></tr></thead>
+    <tbody>
+<tr data-type="Homepage" data-action="improve"><td class="u">/</td><td>Homepage</td><td class="n">3001</td><td class="n">67%</td><td class="n">91</td><td>index</td><td><span class="act improve">Improve</span></td><td>snowbird car shipping</td><td class="note">Retitle for both directions; add northbound section and routes hub link; replace placeholder phone once confirmed.</td></tr>
+<tr data-type="Destination index" data-action="improve"><td class="u">/destinations</td><td>Destination index</td><td class="n">277</td><td class="n">23%</td><td class="n">26</td><td>index</td><td><span class="act improve">Improve</span></td><td>snowbird destinations</td><td class="note">Only 277 words. Add short guidance per state and links to the top routes in both directions.</td></tr>
+<tr data-type="Destination hub" data-action="improve"><td class="u">/destinations/arizona</td><td>Destination hub</td><td class="n">3405</td><td class="n">85%</td><td class="n">25</td><td>index</td><td><span class="act improve">Improve</span></td><td>car shipping to arizona</td><td class="note">Strong unique content. Retarget title to "Car Shipping to {State} for Snowbirds"; add northbound "from {State}" section and links.</td></tr>
+<tr data-type="City page (template)" data-action="hold"><td class="u">/destinations/arizona/mesa</td><td>City page (template)</td><td class="n">947</td><td class="n">16%</td><td class="n">5</td><td>noindex (fixed)</td><td><span class="act hold">Keep noindexed</span></td><td>car shipping mesa</td><td class="note">No demand signal found. Leave noindexed until there is a reason to build it.</td></tr>
+<tr data-type="City page (template)" data-action="rewrite"><td class="u">/destinations/arizona/phoenix</td><td>City page (template)</td><td class="n">954</td><td class="n">17%</td><td class="n">5</td><td>noindex (fixed)</td><td><span class="act rewrite">Rewrite (P2)</span></td><td>car shipping phoenix</td><td class="note">Autocomplete shows demand. Rewrite with city-specific delivery info, then add to staticCityKeys.</td></tr>
+<tr data-type="City page (template)" data-action="rewrite"><td class="u">/destinations/arizona/scottsdale</td><td>City page (template)</td><td class="n">944</td><td class="n">16%</td><td class="n">5</td><td>noindex (fixed)</td><td><span class="act rewrite">Rewrite (P2)</span></td><td>car shipping scottsdale</td><td class="note">Autocomplete shows demand. Rewrite with city-specific delivery info, then add to staticCityKeys.</td></tr>
+<tr data-type="City page (template)" data-action="hold"><td class="u">/destinations/arizona/tucson</td><td>City page (template)</td><td class="n">936</td><td class="n">16%</td><td class="n">5</td><td>noindex (fixed)</td><td><span class="act hold">Keep noindexed</span></td><td>car shipping tucson</td><td class="note">No demand signal found. Leave noindexed until there is a reason to build it.</td></tr>
+<tr data-type="City page (template)" data-action="hold"><td class="u">/destinations/arizona/yuma</td><td>City page (template)</td><td class="n">942</td><td class="n">16%</td><td class="n">5</td><td>noindex (fixed)</td><td><span class="act hold">Keep noindexed</span></td><td>car shipping yuma</td><td class="note">No demand signal found. Leave noindexed until there is a reason to build it.</td></tr>
+<tr data-type="Destination hub" data-action="improve"><td class="u">/destinations/california</td><td>Destination hub</td><td class="n">3811</td><td class="n">78%</td><td class="n">17</td><td>index</td><td><span class="act improve">Improve</span></td><td>car shipping to california</td><td class="note">Strong unique content. Retarget title to "Car Shipping to {State} for Snowbirds"; add northbound "from {State}" section and links.</td></tr>
+<tr data-type="City page (template)" data-action="hold"><td class="u">/destinations/california/indio</td><td>City page (template)</td><td class="n">927</td><td class="n">16%</td><td class="n">5</td><td>noindex (fixed)</td><td><span class="act hold">Keep noindexed</span></td><td>car shipping indio</td><td class="note">No demand signal found. Leave noindexed until there is a reason to build it.</td></tr>
+<tr data-type="City page (template)" data-action="hold"><td class="u">/destinations/california/palm-desert</td><td>City page (template)</td><td class="n">940</td><td class="n">14%</td><td class="n">5</td><td>noindex (fixed)</td><td><span class="act hold">Keep noindexed</span></td><td>car shipping palm desert</td><td class="note">No demand signal found. Leave noindexed until there is a reason to build it.</td></tr>
+<tr data-type="City page (template)" data-action="hold"><td class="u">/destinations/california/palm-springs</td><td>City page (template)</td><td class="n">941</td><td class="n">15%</td><td class="n">5</td><td>noindex (fixed)</td><td><span class="act hold">Keep noindexed</span></td><td>car shipping palm springs</td><td class="note">No demand signal found. Leave noindexed until there is a reason to build it.</td></tr>
+<tr data-type="City page (template)" data-action="hold"><td class="u">/destinations/california/rancho-mirage</td><td>City page (template)</td><td class="n">927</td><td class="n">16%</td><td class="n">5</td><td>noindex (fixed)</td><td><span class="act hold">Keep noindexed</span></td><td>car shipping rancho mirage</td><td class="note">No demand signal found. Leave noindexed until there is a reason to build it.</td></tr>
+<tr data-type="City page (template)" data-action="hold"><td class="u">/destinations/california/san-diego</td><td>City page (template)</td><td class="n">937</td><td class="n">16%</td><td class="n">5</td><td>noindex (fixed)</td><td><span class="act hold">Keep noindexed</span></td><td>car shipping san diego</td><td class="note">No demand signal found. Leave noindexed until there is a reason to build it.</td></tr>
+<tr data-type="Destination hub" data-action="improve"><td class="u">/destinations/florida</td><td>Destination hub</td><td class="n">3507</td><td class="n">83%</td><td class="n">32</td><td>index</td><td><span class="act improve">Improve</span></td><td>car shipping to florida</td><td class="note">Strong unique content. Retarget title to "Car Shipping to {State} for Snowbirds"; add northbound "from {State}" section and links.</td></tr>
+<tr data-type="City page (template)" data-action="rewrite"><td class="u">/destinations/florida/fort-myers</td><td>City page (template)</td><td class="n">994</td><td class="n">17%</td><td class="n">5</td><td>noindex (fixed)</td><td><span class="act rewrite">Rewrite (P2)</span></td><td>car shipping fort myers</td><td class="note">Autocomplete shows demand. Rewrite with city-specific delivery info, then add to staticCityKeys.</td></tr>
+<tr data-type="City page (template)" data-action="hold"><td class="u">/destinations/florida/miami</td><td>City page (template)</td><td class="n">995</td><td class="n">17%</td><td class="n">7</td><td>noindex (fixed)</td><td><span class="act hold">Keep noindexed</span></td><td>car shipping miami</td><td class="note">No demand signal found. Leave noindexed until there is a reason to build it.</td></tr>
+<tr data-type="City page (template)" data-action="rewrite"><td class="u">/destinations/florida/naples</td><td>City page (template)</td><td class="n">986</td><td class="n">17%</td><td class="n">7</td><td>noindex (fixed)</td><td><span class="act rewrite">Rewrite (P2)</span></td><td>car shipping naples</td><td class="note">Autocomplete shows demand. Rewrite with city-specific delivery info, then add to staticCityKeys.</td></tr>
+<tr data-type="City page (template)" data-action="hold"><td class="u">/destinations/florida/orlando</td><td>City page (template)</td><td class="n">991</td><td class="n">15%</td><td class="n">7</td><td>noindex (fixed)</td><td><span class="act hold">Keep noindexed</span></td><td>car shipping orlando</td><td class="note">No demand signal found. Leave noindexed until there is a reason to build it.</td></tr>
+<tr data-type="City page (template)" data-action="rewrite"><td class="u">/destinations/florida/sarasota</td><td>City page (template)</td><td class="n">992</td><td class="n">16%</td><td class="n">1</td><td>noindex (fixed)</td><td><span class="act rewrite">Rewrite (P2)</span></td><td>car shipping sarasota</td><td class="note">Autocomplete shows demand. Rewrite with city-specific delivery info, then add to staticCityKeys.</td></tr>
+<tr data-type="City page (template)" data-action="hold"><td class="u">/destinations/florida/tampa</td><td>City page (template)</td><td class="n">994</td><td class="n">16%</td><td class="n">7</td><td>noindex (fixed)</td><td><span class="act hold">Keep noindexed</span></td><td>car shipping tampa</td><td class="note">No demand signal found. Leave noindexed until there is a reason to build it.</td></tr>
+<tr data-type="City page (template)" data-action="hold"><td class="u">/destinations/florida/west-palm-beach</td><td>City page (template)</td><td class="n">1014</td><td class="n">17%</td><td class="n">1</td><td>noindex (fixed)</td><td><span class="act hold">Keep noindexed</span></td><td>car shipping west palm beach</td><td class="note">No demand signal found. Leave noindexed until there is a reason to build it.</td></tr>
+<tr data-type="Destination hub" data-action="improve"><td class="u">/destinations/texas</td><td>Destination hub</td><td class="n">3473</td><td class="n">72%</td><td class="n">22</td><td>index</td><td><span class="act improve">Improve</span></td><td>car shipping to texas</td><td class="note">Strong unique content. Retarget title to "Car Shipping to {State} for Snowbirds"; add northbound "from {State}" section and links.</td></tr>
+<tr data-type="City page (template)" data-action="hold"><td class="u">/destinations/texas/brownsville</td><td>City page (template)</td><td class="n">947</td><td class="n">18%</td><td class="n">5</td><td>noindex (fixed)</td><td><span class="act hold">Keep noindexed</span></td><td>car shipping brownsville</td><td class="note">No demand signal found. Leave noindexed until there is a reason to build it.</td></tr>
+<tr data-type="City page (template)" data-action="hold"><td class="u">/destinations/texas/corpus-christi</td><td>City page (template)</td><td class="n">947</td><td class="n">18%</td><td class="n">5</td><td>noindex (fixed)</td><td><span class="act hold">Keep noindexed</span></td><td>car shipping corpus christi</td><td class="note">No demand signal found. Leave noindexed until there is a reason to build it.</td></tr>
+<tr data-type="City page (template)" data-action="hold"><td class="u">/destinations/texas/harlingen</td><td>City page (template)</td><td class="n">952</td><td class="n">17%</td><td class="n">5</td><td>noindex (fixed)</td><td><span class="act hold">Keep noindexed</span></td><td>car shipping harlingen</td><td class="note">No demand signal found. Leave noindexed until there is a reason to build it.</td></tr>
+<tr data-type="City page (template)" data-action="hold"><td class="u">/destinations/texas/mcallen</td><td>City page (template)</td><td class="n">956</td><td class="n">16%</td><td class="n">5</td><td>noindex (fixed)</td><td><span class="act hold">Keep noindexed</span></td><td>car shipping mcallen</td><td class="note">No demand signal found. Leave noindexed until there is a reason to build it.</td></tr>
+<tr data-type="City page (template)" data-action="hold"><td class="u">/destinations/texas/san-antonio</td><td>City page (template)</td><td class="n">955</td><td class="n">17%</td><td class="n">5</td><td>noindex (fixed)</td><td><span class="act hold">Keep noindexed</span></td><td>car shipping san antonio</td><td class="note">No demand signal found. Leave noindexed until there is a reason to build it.</td></tr>
+<tr data-type="Resource index" data-action="keep"><td class="u">/resources</td><td>Resource index</td><td class="n">931</td><td class="n">23%</td><td class="n">24</td><td>index</td><td><span class="act keep">Keep</span></td><td>snowbird car shipping guides</td><td class="note">Index page; fine as is.</td></tr>
+<tr data-type="Article" data-action="keep"><td class="u">/resources/55-plus-community-car-delivery</td><td>Article</td><td class="n">1502</td><td class="n">86%</td><td class="n">11</td><td>index</td><td><span class="act keep">Keep / Improve</span></td><td>55 plus community car delivery</td><td class="note">Placeholders and unsupported stats removed. Add author/reviewer and a last-reviewed date.</td></tr>
+<tr data-type="Article" data-action="keep"><td class="u">/resources/broker-vs-direct-carrier-snowbird-shipping</td><td>Article</td><td class="n">1481</td><td class="n">88%</td><td class="n">13</td><td>index</td><td><span class="act keep">Keep / Improve</span></td><td>broker vs direct carrier snowbird shipping</td><td class="note">Placeholders and unsupported stats removed. Add author/reviewer and a last-reviewed date.</td></tr>
+<tr data-type="Article" data-action="keep"><td class="u">/resources/early-return-mid-season-snowbird-shipping</td><td>Article</td><td class="n">1405</td><td class="n">87%</td><td class="n">1</td><td>index</td><td><span class="act keep">Keep / Improve</span></td><td>early return mid season snowbird shipping</td><td class="note">Placeholders and unsupported stats removed. Add author/reviewer and a last-reviewed date.</td></tr>
+<tr data-type="Article" data-action="keep"><td class="u">/resources/ev-snowbird-car-shipping</td><td>Article</td><td class="n">1391</td><td class="n">86%</td><td class="n">12</td><td>index</td><td><span class="act keep">Keep / Improve</span></td><td>ev snowbird car shipping</td><td class="note">Placeholders and unsupported stats removed. Add author/reviewer and a last-reviewed date.</td></tr>
+<tr data-type="Article" data-action="keep"><td class="u">/resources/first-time-snowbird-shipping</td><td>Article</td><td class="n">1932</td><td class="n">87%</td><td class="n">13</td><td>index</td><td><span class="act keep">Keep / Improve</span></td><td>first time snowbird shipping</td><td class="note">Placeholders and unsupported stats removed. Add author/reviewer and a last-reviewed date.</td></tr>
+<tr data-type="Article" data-action="keep"><td class="u">/resources/hidden-fees-snowbird-car-shipping</td><td>Article</td><td class="n">1505</td><td class="n">88%</td><td class="n">2</td><td>index</td><td><span class="act keep">Keep / Improve</span></td><td>hidden fees snowbird car shipping</td><td class="note">Placeholders and unsupported stats removed. Add author/reviewer and a last-reviewed date.</td></tr>
+<tr data-type="Article" data-action="keep"><td class="u">/resources/hurricane-season-florida-shipping</td><td>Article</td><td class="n">1646</td><td class="n">88%</td><td class="n">11</td><td>index</td><td><span class="act keep">Keep / Improve</span></td><td>hurricane season florida shipping</td><td class="note">Placeholders and unsupported stats removed. Add author/reviewer and a last-reviewed date.</td></tr>
+<tr data-type="Article" data-action="keep"><td class="u">/resources/open-vs-enclosed-car-shipping-snowbird</td><td>Article</td><td class="n">1677</td><td class="n">88%</td><td class="n">15</td><td>index</td><td><span class="act keep">Keep / Improve</span></td><td>open vs enclosed car shipping snowbird</td><td class="note">Placeholders and unsupported stats removed. Add author/reviewer and a last-reviewed date.</td></tr>
+<tr data-type="Article" data-action="keep"><td class="u">/resources/round-trip-vs-one-way-snowbird-shipping</td><td>Article</td><td class="n">1716</td><td class="n">89%</td><td class="n">14</td><td>index</td><td><span class="act keep">Keep / Improve</span></td><td>round trip vs one way snowbird shipping</td><td class="note">Placeholders and unsupported stats removed. Add author/reviewer and a last-reviewed date.</td></tr>
+<tr data-type="Article" data-action="keep"><td class="u">/resources/rv-resort-car-delivery</td><td>Article</td><td class="n">1562</td><td class="n">84%</td><td class="n">4</td><td>index</td><td><span class="act keep">Keep / Improve</span></td><td>rv resort car delivery</td><td class="note">Placeholders and unsupported stats removed. Add author/reviewer and a last-reviewed date.</td></tr>
+<tr data-type="Article" data-action="keep"><td class="u">/resources/ship-vs-drive-snowbird</td><td>Article</td><td class="n">1846</td><td class="n">90%</td><td class="n">1</td><td>index</td><td><span class="act keep">Keep / Improve</span></td><td>ship vs drive snowbird</td><td class="note">Placeholders and unsupported stats removed. Add author/reviewer and a last-reviewed date.</td></tr>
+<tr data-type="Article" data-action="keep"><td class="u">/resources/shipping-classic-luxury-car-for-winter</td><td>Article</td><td class="n">1517</td><td class="n">87%</td><td class="n">13</td><td>index</td><td><span class="act keep">Keep / Improve</span></td><td>shipping classic luxury car for winter</td><td class="note">Placeholders and unsupported stats removed. Add author/reviewer and a last-reviewed date.</td></tr>
+<tr data-type="Article" data-action="rewrite"><td class="u">/resources/snowbird-car-shipping-cost</td><td>Article</td><td class="n">438</td><td class="n">64%</td><td class="n">21</td><td>index</td><td><span class="act rewrite">Rewrite (P1)</span></td><td>how much does it cost to ship a car to florida</td><td class="note">Only 438 words on the most-searched question type. Expand into the main cost guide with tables by route and vehicle.</td></tr>
+<tr data-type="Article" data-action="keep"><td class="u">/resources/snowbird-car-shipping-guide</td><td>Article</td><td class="n">2161</td><td class="n">87%</td><td class="n">19</td><td>index</td><td><span class="act keep">Keep / Improve</span></td><td>snowbird car shipping guide</td><td class="note">Placeholders and unsupported stats removed. Add author/reviewer and a last-reviewed date.</td></tr>
+<tr data-type="Article" data-action="keep"><td class="u">/resources/snowbird-car-shipping-insurance-claims</td><td>Article</td><td class="n">1437</td><td class="n">87%</td><td class="n">8</td><td>index</td><td><span class="act keep">Keep / Improve</span></td><td>snowbird car shipping insurance claims</td><td class="note">Placeholders and unsupported stats removed. Add author/reviewer and a last-reviewed date.</td></tr>
+<tr data-type="Article" data-action="keep"><td class="u">/resources/snowbird-destination-comparison</td><td>Article</td><td class="n">775</td><td class="n">78%</td><td class="n">13</td><td>index</td><td><span class="act keep">Keep / Improve</span></td><td>snowbird destination comparison</td><td class="note">Placeholders and unsupported stats removed. Add author/reviewer and a last-reviewed date.</td></tr>
+<tr data-type="Article" data-action="keep"><td class="u">/resources/snowbird-shipping-calendar</td><td>Article</td><td class="n">1631</td><td class="n">89%</td><td class="n">15</td><td>index</td><td><span class="act keep">Keep / Improve</span></td><td>snowbird shipping calendar</td><td class="note">Placeholders and unsupported stats removed. Add author/reviewer and a last-reviewed date.</td></tr>
+<tr data-type="Article" data-action="improve"><td class="u">/resources/snowbird-vehicle-preparation-checklist</td><td>Article</td><td class="n">422</td><td class="n">65%</td><td class="n">17</td><td>index</td><td><span class="act improve">Improve</span></td><td>how to prepare car for shipping</td><td class="note">422 words. Expand into a printable checklist; link from every route page pre-pickup section.</td></tr>
+<tr data-type="Article" data-action="keep"><td class="u">/resources/what-to-pack-in-car-shipped-south</td><td>Article</td><td class="n">1365</td><td class="n">86%</td><td class="n">1</td><td>index</td><td><span class="act keep">Keep / Improve</span></td><td>what to pack in car shipped south</td><td class="note">Placeholders and unsupported stats removed. Add author/reviewer and a last-reviewed date.</td></tr>
+<tr data-type="Article" data-action="keep"><td class="u">/resources/when-to-ship-car-back-north</td><td>Article</td><td class="n">1720</td><td class="n">89%</td><td class="n">4</td><td>index</td><td><span class="act keep">Keep / Improve</span></td><td>when to ship car back north</td><td class="note">Placeholders and unsupported stats removed. Add author/reviewer and a last-reviewed date.</td></tr>
+<tr data-type="Article" data-action="merge"><td class="u">/resources/when-to-ship-your-car-south-for-winter</td><td>Article</td><td class="n">447</td><td class="n">65%</td><td class="n">16</td><td>index</td><td><span class="act merge">Merge or expand</span></td><td>when to ship car to florida</td><td class="note">447 words; overlaps the shipping calendar. Merge into /resources/snowbird-shipping-calendar with a 301, or expand.</td></tr>
+<tr data-type="Article" data-action="keep"><td class="u">/resources/why-peak-season-car-shipping-costs-more</td><td>Article</td><td class="n">1412</td><td class="n">88%</td><td class="n">1</td><td>index</td><td><span class="act keep">Keep / Improve</span></td><td>why peak season car shipping costs more</td><td class="note">Placeholders and unsupported stats removed. Add author/reviewer and a last-reviewed date.</td></tr>
+<tr data-type="Article" data-action="keep"><td class="u">/resources/winterizing-northern-vehicle-left-behind</td><td>Article</td><td class="n">1508</td><td class="n">89%</td><td class="n">1</td><td>index</td><td><span class="act keep">Keep / Improve</span></td><td>winterizing northern vehicle left behind</td><td class="note">Placeholders and unsupported stats removed. Add author/reviewer and a last-reviewed date.</td></tr>
+<tr data-type="Route (template)" data-action="remove"><td class="u">/routes/california-to-arizona</td><td>Route (template)</td><td class="n">1070</td><td class="n">14%</td><td class="n">6</td><td>noindex (fixed)</td><td><span class="act remove">Remove later</span></td><td>california to arizona car shipping</td><td class="note">Not a snowbird lane and no autocomplete demand. Keep noindexed; drop from data/routes.js once internal links are moved.</td></tr>
+<tr data-type="Route (template)" data-action="remove"><td class="u">/routes/colorado-to-arizona</td><td>Route (template)</td><td class="n">1062</td><td class="n">14%</td><td class="n">6</td><td>noindex (fixed)</td><td><span class="act remove">Remove later</span></td><td>colorado to arizona car shipping</td><td class="note">Not a snowbird lane and no autocomplete demand. Keep noindexed; drop from data/routes.js once internal links are moved.</td></tr>
+<tr data-type="Route (hand-built)" data-action="improve"><td class="u">/routes/connecticut-to-florida</td><td>Route (hand-built)</td><td class="n">2535</td><td class="n">37%</td><td class="n">17</td><td>index</td><td><span class="act improve">Improve</span></td><td>connecticut to florida car shipping</td><td class="note">Fake MC# and phone removed. Only 30–43% unique vs sibling routes; add the northbound reverse route, validate price ranges against real quotes.</td></tr>
+<tr data-type="Route (template)" data-action="rewrite"><td class="u">/routes/illinois-to-arizona</td><td>Route (template)</td><td class="n">1068</td><td class="n">9%</td><td class="n">15</td><td>noindex (fixed)</td><td><span class="act rewrite">Rewrite (P2)</span></td><td>illinois to arizona car shipping</td><td class="note">Template page, 8–14% unique. Rebuild with the 15-section route template, then add to staticRouteSlugs.</td></tr>
+<tr data-type="Route (template)" data-action="hold"><td class="u">/routes/illinois-to-california</td><td>Route (template)</td><td class="n">1068</td><td class="n">10%</td><td class="n">8</td><td>noindex (fixed)</td><td><span class="act hold">Keep noindexed</span></td><td>illinois to california car shipping</td><td class="note">Low priority lane. Revisit after the Florida and Arizona lanes are done.</td></tr>
+<tr data-type="Route (template)" data-action="rewrite"><td class="u">/routes/illinois-to-florida</td><td>Route (template)</td><td class="n">1084</td><td class="n">8%</td><td class="n">5</td><td>noindex (fixed)</td><td><span class="act rewrite">Rewrite (P1)</span></td><td>illinois to florida car shipping</td><td class="note">Template page, 8–14% unique. Rebuild with the 15-section route template, then add to staticRouteSlugs.</td></tr>
+<tr data-type="Route (template)" data-action="rewrite"><td class="u">/routes/illinois-to-texas</td><td>Route (template)</td><td class="n">1066</td><td class="n">11%</td><td class="n">11</td><td>noindex (fixed)</td><td><span class="act rewrite">Rewrite (P3)</span></td><td>illinois to texas car shipping</td><td class="note">Template page, 8–14% unique. Rebuild with the 15-section route template, then add to staticRouteSlugs.</td></tr>
+<tr data-type="Route (hand-built)" data-action="improve"><td class="u">/routes/maryland-to-florida</td><td>Route (hand-built)</td><td class="n">2575</td><td class="n">40%</td><td class="n">17</td><td>index</td><td><span class="act improve">Improve</span></td><td>maryland to florida car shipping</td><td class="note">Fake MC# and phone removed. Only 30–43% unique vs sibling routes; add the northbound reverse route, validate price ranges against real quotes.</td></tr>
+<tr data-type="Route (hand-built)" data-action="improve"><td class="u">/routes/massachusetts-to-florida</td><td>Route (hand-built)</td><td class="n">2632</td><td class="n">42%</td><td class="n">17</td><td>index</td><td><span class="act improve">Improve</span></td><td>massachusetts to florida car shipping</td><td class="note">Fake MC# and phone removed. Only 30–43% unique vs sibling routes; add the northbound reverse route, validate price ranges against real quotes.</td></tr>
+<tr data-type="Route (template)" data-action="rewrite"><td class="u">/routes/michigan-to-arizona</td><td>Route (template)</td><td class="n">1079</td><td class="n">9%</td><td class="n">14</td><td>noindex (fixed)</td><td><span class="act rewrite">Rewrite (P2)</span></td><td>michigan to arizona car shipping</td><td class="note">Template page, 8–14% unique. Rebuild with the 15-section route template, then add to staticRouteSlugs.</td></tr>
+<tr data-type="Route (template)" data-action="rewrite"><td class="u">/routes/michigan-to-florida</td><td>Route (template)</td><td class="n">1097</td><td class="n">9%</td><td class="n">4</td><td>noindex (fixed)</td><td><span class="act rewrite">Rewrite (P1)</span></td><td>michigan to florida car shipping</td><td class="note">Template page, 8–14% unique. Rebuild with the 15-section route template, then add to staticRouteSlugs.</td></tr>
+<tr data-type="Route (template)" data-action="rewrite"><td class="u">/routes/michigan-to-texas</td><td>Route (template)</td><td class="n">1077</td><td class="n">9%</td><td class="n">7</td><td>noindex (fixed)</td><td><span class="act rewrite">Rewrite (P3)</span></td><td>michigan to texas car shipping</td><td class="note">Template page, 8–14% unique. Rebuild with the 15-section route template, then add to staticRouteSlugs.</td></tr>
+<tr data-type="Route (template)" data-action="rewrite"><td class="u">/routes/minnesota-to-texas</td><td>Route (template)</td><td class="n">1070</td><td class="n">9%</td><td class="n">8</td><td>noindex (fixed)</td><td><span class="act rewrite">Rewrite (P3)</span></td><td>minnesota to texas car shipping</td><td class="note">Template page, 8–14% unique. Rebuild with the 15-section route template, then add to staticRouteSlugs.</td></tr>
+<tr data-type="Route (template)" data-action="remove"><td class="u">/routes/nevada-to-arizona</td><td>Route (template)</td><td class="n">1061</td><td class="n">9%</td><td class="n">7</td><td>noindex (fixed)</td><td><span class="act remove">Remove later</span></td><td>nevada to arizona car shipping</td><td class="note">Not a snowbird lane and no autocomplete demand. Keep noindexed; drop from data/routes.js once internal links are moved.</td></tr>
+<tr data-type="Route (template)" data-action="remove"><td class="u">/routes/nevada-to-california</td><td>Route (template)</td><td class="n">1057</td><td class="n">10%</td><td class="n">6</td><td>noindex (fixed)</td><td><span class="act remove">Remove later</span></td><td>nevada to california car shipping</td><td class="note">Not a snowbird lane and no autocomplete demand. Keep noindexed; drop from data/routes.js once internal links are moved.</td></tr>
+<tr data-type="Route (hand-built)" data-action="improve"><td class="u">/routes/new-jersey-to-florida</td><td>Route (hand-built)</td><td class="n">2576</td><td class="n">30%</td><td class="n">19</td><td>index</td><td><span class="act improve">Improve</span></td><td>new jersey to florida car shipping</td><td class="note">Fake MC# and phone removed. Only 30–43% unique vs sibling routes; add the northbound reverse route, validate price ranges against real quotes.</td></tr>
+<tr data-type="Route (template)" data-action="rewrite"><td class="u">/routes/new-york-to-arizona</td><td>Route (template)</td><td class="n">1092</td><td class="n">12%</td><td class="n">15</td><td>noindex (fixed)</td><td><span class="act rewrite">Rewrite (P3)</span></td><td>new york to arizona car shipping</td><td class="note">Template page, 8–14% unique. Rebuild with the 15-section route template, then add to staticRouteSlugs.</td></tr>
+<tr data-type="Route (template)" data-action="hold"><td class="u">/routes/new-york-to-california</td><td>Route (template)</td><td class="n">1099</td><td class="n">12%</td><td class="n">10</td><td>noindex (fixed)</td><td><span class="act hold">Keep noindexed</span></td><td>new york to california car shipping</td><td class="note">Low priority lane. Revisit after the Florida and Arizona lanes are done.</td></tr>
+<tr data-type="Route (hand-built)" data-action="improve"><td class="u">/routes/new-york-to-florida</td><td>Route (hand-built)</td><td class="n">2513</td><td class="n">35%</td><td class="n">22</td><td>index</td><td><span class="act improve">Improve</span></td><td>new york to florida car shipping</td><td class="note">Fake MC# and phone removed. Only 30–43% unique vs sibling routes; add the northbound reverse route, validate price ranges against real quotes.</td></tr>
+<tr data-type="Route (template)" data-action="hold"><td class="u">/routes/new-york-to-texas</td><td>Route (template)</td><td class="n">1098</td><td class="n">8%</td><td class="n">12</td><td>noindex (fixed)</td><td><span class="act hold">Keep noindexed</span></td><td>new york to texas car shipping</td><td class="note">Low priority lane. Revisit after the Florida and Arizona lanes are done.</td></tr>
+<tr data-type="Route (hand-built)" data-action="improve"><td class="u">/routes/ohio-to-florida</td><td>Route (hand-built)</td><td class="n">2615</td><td class="n">43%</td><td class="n">3</td><td>index</td><td><span class="act improve">Improve</span></td><td>ohio to florida car shipping</td><td class="note">Fake MC# and phone removed. Only 30–43% unique vs sibling routes; add the northbound reverse route, validate price ranges against real quotes.</td></tr>
+<tr data-type="Route (template)" data-action="hold"><td class="u">/routes/oregon-to-california</td><td>Route (template)</td><td class="n">1057</td><td class="n">13%</td><td class="n">7</td><td>noindex (fixed)</td><td><span class="act hold">Keep noindexed</span></td><td>oregon to california car shipping</td><td class="note">Low priority lane. Revisit after the Florida and Arizona lanes are done.</td></tr>
+<tr data-type="Route (hand-built)" data-action="improve"><td class="u">/routes/pennsylvania-to-florida</td><td>Route (hand-built)</td><td class="n">2551</td><td class="n">30%</td><td class="n">19</td><td>index</td><td><span class="act improve">Improve</span></td><td>pennsylvania to florida car shipping</td><td class="note">Fake MC# and phone removed. Only 30–43% unique vs sibling routes; add the northbound reverse route, validate price ranges against real quotes.</td></tr>
+<tr data-type="Route (hand-built)" data-action="improve"><td class="u">/routes/virginia-to-florida</td><td>Route (hand-built)</td><td class="n">2888</td><td class="n">59%</td><td class="n">9</td><td>index</td><td><span class="act improve">Improve</span></td><td>virginia to florida car shipping</td><td class="note">Fake MC# and phone removed. Only 30–43% unique vs sibling routes; add the northbound reverse route, validate price ranges against real quotes.</td></tr>
+<tr data-type="Route (template)" data-action="hold"><td class="u">/routes/washington-to-arizona</td><td>Route (template)</td><td class="n">1068</td><td class="n">8%</td><td class="n">2</td><td>noindex (fixed)</td><td><span class="act hold">Keep noindexed</span></td><td>washington to arizona car shipping</td><td class="note">Low priority lane. Revisit after the Florida and Arizona lanes are done.</td></tr>
+<tr data-type="Route (template)" data-action="hold"><td class="u">/routes/washington-to-california</td><td>Route (template)</td><td class="n">1064</td><td class="n">12%</td><td class="n">8</td><td>noindex (fixed)</td><td><span class="act hold">Keep noindexed</span></td><td>washington to california car shipping</td><td class="note">Low priority lane. Revisit after the Florida and Arizona lanes are done.</td></tr>
+<tr data-type="Route (template)" data-action="rewrite"><td class="u">/routes/wisconsin-to-texas</td><td>Route (template)</td><td class="n">1068</td><td class="n">9%</td><td class="n">8</td><td>noindex (fixed)</td><td><span class="act rewrite">Rewrite (P3)</span></td><td>wisconsin to texas car shipping</td><td class="note">Template page, 8–14% unique. Rebuild with the 15-section route template, then add to staticRouteSlugs.</td></tr>
+<tr data-type="Tool" data-action="keep"><td class="u">/snowbird-car-shipping-cost-calculator</td><td>Tool</td><td class="n">1432</td><td class="n">87%</td><td class="n">25</td><td>index</td><td><span class="act keep">Keep</span></td><td>snowbird car shipping cost calculator</td><td class="note">Unique tool page. Link to it from every route cost section.</td></tr>
+<tr data-type="Origin hub (hand-built)" data-action="keep"><td class="u">/states/connecticut</td><td>Origin hub (hand-built)</td><td class="n">3597</td><td class="n">75%</td><td class="n">9</td><td>index</td><td><span class="act keep">Keep / Improve</span></td><td>connecticut car shipping</td><td class="note">Strong unique content. "Guaranteed pickup" wording fixed. Add links to northbound routes into this state.</td></tr>
+<tr data-type="Origin hub (template)" data-action="rewrite"><td class="u">/states/illinois</td><td>Origin hub (template)</td><td class="n">1262</td><td class="n">18%</td><td class="n">1</td><td>noindex (fixed)</td><td><span class="act rewrite">Rewrite (P1)</span></td><td>illinois snowbird car shipping</td><td class="note">Template page, 12–18% unique. Michigan and Illinois are major snowbird origins.</td></tr>
+<tr data-type="Origin hub (hand-built)" data-action="keep"><td class="u">/states/maryland</td><td>Origin hub (hand-built)</td><td class="n">3713</td><td class="n">69%</td><td class="n">9</td><td>index</td><td><span class="act keep">Keep / Improve</span></td><td>maryland car shipping</td><td class="note">Strong unique content. "Guaranteed pickup" wording fixed. Add links to northbound routes into this state.</td></tr>
+<tr data-type="Origin hub (hand-built)" data-action="keep"><td class="u">/states/massachusetts</td><td>Origin hub (hand-built)</td><td class="n">3778</td><td class="n">74%</td><td class="n">9</td><td>index</td><td><span class="act keep">Keep / Improve</span></td><td>massachusetts car shipping</td><td class="note">Strong unique content. "Guaranteed pickup" wording fixed. Add links to northbound routes into this state.</td></tr>
+<tr data-type="Origin hub (template)" data-action="rewrite"><td class="u">/states/michigan</td><td>Origin hub (template)</td><td class="n">1224</td><td class="n">15%</td><td class="n">1</td><td>noindex (fixed)</td><td><span class="act rewrite">Rewrite (P1)</span></td><td>michigan snowbird car shipping</td><td class="note">Template page, 12–18% unique. Michigan and Illinois are major snowbird origins.</td></tr>
+<tr data-type="Origin hub (template)" data-action="rewrite"><td class="u">/states/minnesota</td><td>Origin hub (template)</td><td class="n">1207</td><td class="n">12%</td><td class="n">1</td><td>noindex (fixed)</td><td><span class="act rewrite">Rewrite (P3)</span></td><td>minnesota snowbird car shipping</td><td class="note">Template page, 12–18% unique. Michigan and Illinois are major snowbird origins.</td></tr>
+<tr data-type="Origin hub (hand-built)" data-action="keep"><td class="u">/states/new-jersey</td><td>Origin hub (hand-built)</td><td class="n">3611</td><td class="n">74%</td><td class="n">9</td><td>index</td><td><span class="act keep">Keep / Improve</span></td><td>new jersey car shipping</td><td class="note">Strong unique content. "Guaranteed pickup" wording fixed. Add links to northbound routes into this state.</td></tr>
+<tr data-type="Origin hub (hand-built)" data-action="keep"><td class="u">/states/new-york</td><td>Origin hub (hand-built)</td><td class="n">3668</td><td class="n">73%</td><td class="n">9</td><td>index</td><td><span class="act keep">Keep / Improve</span></td><td>new york car shipping</td><td class="note">Strong unique content. "Guaranteed pickup" wording fixed. Add links to northbound routes into this state.</td></tr>
+<tr data-type="Origin hub (hand-built)" data-action="keep"><td class="u">/states/ohio</td><td>Origin hub (hand-built)</td><td class="n">3762</td><td class="n">78%</td><td class="n">2</td><td>index</td><td><span class="act keep">Keep / Improve</span></td><td>ohio car shipping</td><td class="note">Strong unique content. "Guaranteed pickup" wording fixed. Add links to northbound routes into this state.</td></tr>
+<tr data-type="Origin hub (hand-built)" data-action="keep"><td class="u">/states/pennsylvania</td><td>Origin hub (hand-built)</td><td class="n">3645</td><td class="n">73%</td><td class="n">9</td><td>index</td><td><span class="act keep">Keep / Improve</span></td><td>pennsylvania car shipping</td><td class="note">Strong unique content. "Guaranteed pickup" wording fixed. Add links to northbound routes into this state.</td></tr>
+<tr data-type="Origin hub (hand-built)" data-action="keep"><td class="u">/states/virginia</td><td>Origin hub (hand-built)</td><td class="n">3671</td><td class="n">73%</td><td class="n">8</td><td>index</td><td><span class="act keep">Keep / Improve</span></td><td>virginia car shipping</td><td class="note">Strong unique content. "Guaranteed pickup" wording fixed. Add links to northbound routes into this state.</td></tr>
+<tr data-type="Origin hub (template)" data-action="rewrite"><td class="u">/states/wisconsin</td><td>Origin hub (template)</td><td class="n">1197</td><td class="n">12%</td><td class="n">1</td><td>noindex (fixed)</td><td><span class="act rewrite">Rewrite (P3)</span></td><td>wisconsin snowbird car shipping</td><td class="note">Template page, 12–18% unique. Michigan and Illinois are major snowbird origins.</td></tr>
+<tr data-type="Trust page" data-action="new"><td class="u">/about</td><td>Trust page</td><td class="n"></td><td class="n"></td><td class="n"></td><td>index</td><td><span class="act new">New</span></td><td>about snowbird car shipping</td><td class="note">Created: who we are, broker vs carrier, what to verify, payment.</td></tr>
+<tr data-type="Trust page" data-action="new"><td class="u">/contact</td><td>Trust page</td><td class="n"></td><td class="n"></td><td class="n"></td><td>index</td><td><span class="act new">New</span></td><td>contact</td><td class="note">Created: phone, email, hours, quote form.</td></tr>
+<tr data-type="Legal page" data-action="new"><td class="u">/privacy-policy</td><td>Legal page</td><td class="n"></td><td class="n"></td><td class="n"></td><td>index</td><td><span class="act new">New (legal review)</span></td><td>privacy policy</td><td class="note">Written from what the code collects. Owner and counsel must confirm lead-sharing before deploy.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="newcontent">
+  <h2>New content plan <span class="deliv">Deliverables 7 &amp; 8</span></h2>
+  <div class="col">
+    <div class="callout"><p><strong>Status of rewritten content.</strong> This pass fixed what was false or broken in the existing copy. Full rewrites and new pages are the next phase, built one at a time with the 15-section route template so each page has real lane-specific facts. They are not done yet.</p></div>
+  </div>
+  <div class="tbl"><table>
+    <thead><tr><th>Priority</th><th>Page</th><th>Why</th><th>Must include</th></tr></thead>
+    <tbody>
+      <tr><td>P1</td><td class="u">/routes/florida-to-new-york<br>/routes/florida-to-new-jersey<br>/routes/florida-to-michigan<br>/routes/florida-to-massachusetts<br>/routes/florida-to-ohio<br>/routes/florida-to-pennsylvania</td><td>Autocomplete demand for each; zero coverage; spring season</td><td>Spring timing (March–June), Florida-side pickup (gated communities, condo garages), why northbound costs more in spring and less in fall, link to the southbound twin</td></tr>
+      <tr><td>P1</td><td class="u">/resources/snowbird-car-shipping-cost</td><td>Most common question shape; page is 438 words</td><td>Price table per lane and direction, vehicle-type table, open vs enclosed, peak vs off-peak, deposit terms</td></tr>
+      <tr><td>P1</td><td class="u">/routes/michigan-to-florida<br>/routes/illinois-to-florida</td><td>Demand evidence; currently templates</td><td>I-75 / I-65 corridor city pairs, Gulf Coast destinations</td></tr>
+      <tr><td>P1</td><td class="u">/resources/auto-train-vs-car-shipping</td><td>Real comparison snowbirds make</td><td>Lorton–Sanford only, who it suits, total cost framing with current Amtrak fares linked rather than quoted from memory</td></tr>
+      <tr><td>P1</td><td class="u">/routes</td><td>Fixes nav and breadcrumbs; crawl path</td><td>Southbound and northbound lists, grouped by destination</td></tr>
+      <tr><td>P2</td><td class="u">/states/michigan, /states/illinois</td><td>Major Midwest origins</td><td>Lanes out and lanes home</td></tr>
+      <tr><td>P2</td><td class="u">/routes/michigan-to-arizona, illinois-to-arizona, arizona-to-michigan (new)</td><td>Demand evidence</td><td>Phoenix and Scottsdale city pairs</td></tr>
+      <tr><td>P2</td><td class="u">/destinations/florida/naples, fort-myers, sarasota<br>/destinations/arizona/phoenix, scottsdale</td><td>City demand evidence</td><td>Delivery access, communities, local timing</td></tr>
+      <tr><td>P3</td><td class="u">/routes/florida-to-illinois, -connecticut, -maryland, -minnesota</td><td>Second-tier northbound demand</td><td>Same as P1 northbound</td></tr>
+      <tr><td>P3</td><td>Texas lanes (MN, WI, MI, IL → TX), Canada (if served)</td><td>Winter Texans; Canadian demand</td><td>RV-resort delivery; customs if Canada</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="linking">
+  <h2>Internal linking implementation <span class="deliv">Deliverable 9</span></h2>
+  <div class="tbl"><table>
+    <thead><tr><th>Source</th><th>Destination</th><th>Anchor text</th><th>Placement</th><th>Why</th></tr></thead>
+    <tbody>
+      <tr><td class="u">Header nav, all route breadcrumbs</td><td class="u">/routes</td><td>Routes</td><td>Replace <code>/#routes</code></td><td>Real hub URL for every route</td></tr>
+      <tr><td class="u">/</td><td class="u">/routes</td><td>see every snowbird route, south and north</td><td>End of Popular Routes section</td><td>One-click path to all lanes</td></tr>
+      <tr><td class="u">/</td><td class="u">/routes/florida-to-new-york</td><td>shipping your car back north in the spring</td><td>Round-trip section</td><td>Surfaces northbound from the strongest page</td></tr>
+      <tr><td class="u">/routes/{state}-to-florida (×8)</td><td class="u">/routes/florida-to-{state}</td><td>Florida to {State} car shipping</td><td>Section 11, "Returning North"</td><td>Reverse lane, same customer</td></tr>
+      <tr><td class="u">/routes/florida-to-{state}</td><td class="u">/routes/{state}-to-florida</td><td>shipping from {State} to Florida in the fall</td><td>Section 11</td><td>Closes the round trip</td></tr>
+      <tr><td class="u">/destinations/florida</td><td class="u">each /routes/florida-to-*</td><td>Florida to {State}</td><td>New "Heading home" section</td><td>Hub to northbound lanes</td></tr>
+      <tr><td class="u">/states/{state}</td><td class="u">/routes/florida-to-{state}</td><td>ship your car home from Florida</td><td>Spring paragraph</td><td>Origin hub covers both directions</td></tr>
+      <tr><td class="u">/resources/when-to-ship-car-back-north</td><td class="u">top 3 /routes/florida-to-*</td><td>Florida to New York, Florida to Michigan, Florida to Ohio</td><td>Body, after the timing advice</td><td>Informational → commercial</td></tr>
+      <tr><td class="u">/resources/snowbird-car-shipping-cost</td><td class="u">each route page</td><td>{Origin} to {Destination} car shipping</td><td>Lane rows in the cost table</td><td>Cost intent → lane page</td></tr>
+      <tr><td class="u">/snowbird-car-shipping-cost-calculator</td><td class="u">/resources/snowbird-car-shipping-cost</td><td>full cost guide with route-by-route prices</td><td>Under results</td><td>Cluster the cost pages</td></tr>
+      <tr><td class="u">/resources/ship-vs-drive-snowbird</td><td class="u">/resources/auto-train-vs-car-shipping</td><td>Auto Train vs. shipping your car</td><td>Options section</td><td>Third option readers ask about</td></tr>
+      <tr><td class="u">/resources/auto-train-vs-car-shipping</td><td class="u">/routes/new-york-to-florida, new-jersey-to-florida, virginia-to-florida</td><td>lane names</td><td>"Who shipping suits" section</td><td>Auto Train corridor overlap</td></tr>
+      <tr><td class="u">/resources/broker-vs-direct-carrier-snowbird-shipping</td><td class="u">/about#how-we-work</td><td>how our broker service works</td><td>Intro</td><td>Turns the explainer into trust</td></tr>
+      <tr><td class="u">/resources/when-to-ship-car-back-north</td><td class="u">/resources/early-return-mid-season-snowbird-shipping</td><td>coming home early</td><td>Body</td><td>Only 1 inbound link today</td></tr>
+      <tr><td class="u">Route pages, section 9 (pre-pickup)</td><td class="u">/resources/what-to-pack-in-car-shipped-south</td><td>what you can leave in the car</td><td>Checklist item on belongings</td><td>Only 1 inbound link today</td></tr>
+      <tr><td class="u">/resources/snowbird-car-shipping-cost</td><td class="u">/resources/why-peak-season-car-shipping-costs-more</td><td>why prices rise in peak weeks</td><td>Peak pricing paragraph</td><td>Only 1 inbound link today</td></tr>
+      <tr><td class="u">/resources/first-time-snowbird-shipping</td><td class="u">/resources/winterizing-northern-vehicle-left-behind</td><td>the car you leave up north</td><td>Body</td><td>Only 1 inbound link today</td></tr>
+      <tr><td class="u">Homepage FAQ "Is it worth shipping…"</td><td class="u">/resources/ship-vs-drive-snowbird</td><td>ship vs. drive cost comparison</td><td>FAQ answer can't hold links; add a line under the FAQ</td><td>Only 1 inbound link today</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="onpage">
+  <h2>On-page targets for priority pages <span class="deliv">Deliverable 10</span></h2>
+  <div class="tbl"><table>
+    <thead><tr><th>URL</th><th>Proposed title</th><th>Proposed meta description</th><th>H1</th></tr></thead>
+    <tbody>
+      <tr><td class="u">/</td><td>Snowbird Car Shipping | Ship Your Car South and Back North</td><td>Snowbird car shipping to and from Florida, Arizona, Texas and California. Open or enclosed, door-to-door, arranged through a licensed broker partner. Free quote.</td><td>Snowbird car shipping, south for winter and home in spring</td></tr>
+      <tr><td class="u">/destinations/florida</td><td>Car Shipping to Florida for Snowbirds | Snowbird Car Shipping</td><td>Ship your car to Florida for the winter and back home in spring. Typical prices by region, transit times and the best weeks to book.</td><td>Car shipping to Florida for snowbirds</td></tr>
+      <tr><td class="u">/routes/florida-to-new-york (new)</td><td>Florida to New York Car Shipping | Snowbird Car Shipping</td><td>Ship your car from Florida back to New York. Spring timing, typical open and enclosed prices, Florida pickup tips and a free quote.</td><td>Florida to New York Car Shipping</td></tr>
+      <tr><td class="u">/resources/snowbird-car-shipping-cost</td><td>Cost to Ship a Car to Florida for Winter (2026 Prices)</td><td>What snowbirds pay to ship a car to Florida and back, by route and vehicle type, open vs enclosed, plus what raises or lowers the price.</td><td>How much does it cost to ship a car to Florida?</td></tr>
+      <tr><td class="u">/resources/auto-train-vs-car-shipping (new)</td><td>Auto Train vs. Car Shipping to Florida | Snowbird Car Shipping</td><td>Amtrak's Auto Train or a car carrier? Compare cost, time and convenience for snowbirds heading to Florida.</td><td>Auto Train vs. car shipping to Florida</td></tr>
+      <tr><td class="u">/routes</td><td>Snowbird Car Shipping Routes | Snowbird Car Shipping</td><td>Every snowbird route we cover, south in the fall and north in the spring, with typical costs and transit times.</td><td>Snowbird car shipping routes</td></tr>
+    </tbody>
+  </table></div>
+  <div class="col">
+    <h3>Schema</h3>
+    <ul class="bul">
+      <li>Every page: <code>Organization</code> + <code>WebSite</code> (done). Hubs, routes and articles: <code>BreadcrumbList</code> (already present).</li>
+      <li><code>FAQPage</code> is valid markup, but Google has shown FAQ rich results only for authoritative government and health sites since 2023. Keep it for clarity; don't expect stars or dropdowns in results.</li>
+      <li>Articles: add <code>Article</code> with a real author or reviewer and <code>dateModified</code> once you name one.</li>
+      <li>Don't add <code>LocalBusiness</code> (no qualifying public location) or <code>AggregateRating</code> (no real reviews yet).</li>
+    </ul>
+  </div>
+</section>
+
+<section id="cro">
+  <h2>Conversion &amp; tracking <span class="deliv">Deliverable 11</span></h2>
+  <div class="col">
+    <h3>Quote form</h3>
+    <ul class="bul">
+      <li><strong>Fixed:</strong> city-level addresses and typed entries now pass.</li>
+      <li><strong>Recommended:</strong> replace the required exact pickup date with a timeframe choice (specific date, within 2 weeks, flexible, just pricing). Many snowbirds don't know their exact date when they first ask for a price.</li>
+      <li><strong>Recommended:</strong> load Google Maps when someone first focuses an address field, and never disable the field while it loads.</li>
+      <li><strong>Legal call:</strong> consent checkbox unchecked by default (question 5).</li>
+      <li><strong>Recommended:</strong> say on the success screen when you will call (for example "within one business hour") once you can commit to it.</li>
+    </ul>
+    <h3>Calls and page-level CTAs</h3>
+    <ul class="bul">
+      <li>The confirmed number, (888) 706-8784, now powers every Call button and the schema.</li>
+      <li>Add a sticky bottom bar on phones with "Call" and "Free quote". None exists now, and your audience skews older and more phone-first.</li>
+      <li>Keep the broker note next to every form; it answers "who am I dealing with?" at the moment of decision.</li>
+    </ul>
+    <h3>Tracking (implemented, needs your GA4 ID)</h3>
+    <ol>
+      <li>Set <code>NEXT_PUBLIC_GA_ID=G-XXXXXXX</code> in the production <code>.env</code> and rebuild (it's read at build time).</li>
+      <li>In GA4, mark <code>generate_lead</code> and <code>phone_click</code> as key events. <code>quote_step_complete</code> gives you the drop-off between steps.</li>
+      <li>Qualified leads and bookings live in MongoDB (the <code>status</code> field on each quote). Track them weekly by <code>pageUrl</code> and <code>routeSlug</code>, which every quote already stores, so you can see which pages produce bookings rather than just form fills.</li>
+      <li>Completed-call tracking needs a call-tracking number from your phone provider; a click is not a call.</li>
+    </ol>
+  </div>
+</section>
+
+<section id="authority">
+  <h2>Authority building</h2>
+  <div class="col">
+    <ul class="bul">
+      <li><strong>Weeks 1–2:</strong> links from carshippinghub.com (nav or footer, plus a contextual link). Claim BBB and Transport Reviews profiles under the correct legal name.</li>
+      <li><strong>Weeks 3–8:</strong> outreach to snowbird and 55+ audiences where a car-shipping guide is genuinely useful: community newsletters in Southwest Florida and The Villages, RV-resort and Winter Texan resident resources, seasonal-rental and property managers in Naples and Fort Myers. Offer the shipping calendar or the Auto Train comparison as the resource.</li>
+      <li><strong>Weeks 9–13:</strong> once you have a season of real bookings, publish anonymized facts (busiest pickup weeks, typical lead time by lane). First-hand data is what earns editorial links.</li>
+      <li><strong>Avoid:</strong> paid links, link networks, mass directories and guest posts on unrelated sites.</li>
+    </ul>
+  </div>
+</section>
+
+<section id="plan">
+  <h2>30/60/90-day plan <span class="deliv">Deliverable 12</span></h2>
+  <div class="col"><p>Southbound demand is happening now, but new pages won't rank in time for this fall. Plan around the spring return.</p></div>
+  <div class="phase">
+    <div>
+      <div class="eyebrow">Days 1–30 · by 29 Nov</div>
+      <h3>Make it trustworthy and measurable</h3>
+      <ul>
+        <li><strong>P0</strong> Counsel confirms the trade-name point; deploy the branch. <em>1 day; blocks everything.</em></li>
+        <li><strong>P0</strong> Resubmit sitemap; request indexing for home, 4 hubs, 8 routes, About. <em>1 hour.</em></li>
+        <li><strong>P0</strong> GA4 ID, key events. <em>1 hour.</em></li>
+        <li><strong>P1</strong> Parent-site links. <em>1 hour.</em></li>
+        <li><strong>P1</strong> /routes hub; cost guide rewrite. <em>2–3 days.</em></li>
+        <li><strong>P1</strong> Mobile sticky call/quote bar. <em>0.5 day.</em></li>
+      </ul>
+    </div>
+    <div>
+      <div class="eyebrow">Days 31–60 · by 29 Dec</div>
+      <h3>Own the spring return</h3>
+      <ul>
+        <li><strong>P1</strong> Six northbound route pages. <em>1 day each; needs price validation.</em></li>
+        <li><strong>P1</strong> Rebuild Michigan→FL and Illinois→FL. <em>1 day each.</em></li>
+        <li><strong>P1</strong> Auto Train comparison. <em>1 day.</em></li>
+        <li><strong>P1</strong> Reverse-route and article links from the linking table. <em>0.5 day.</em></li>
+        <li><strong>P2</strong> Retitle destination and state hubs. <em>0.5 day.</em></li>
+      </ul>
+    </div>
+    <div>
+      <div class="eyebrow">Days 61–90 · by 28 Jan</div>
+      <h3>Widen and deepen</h3>
+      <ul>
+        <li><strong>P2</strong> Michigan and Illinois origin hubs. <em>1 day each.</em></li>
+        <li><strong>P2</strong> Arizona lanes incl. Arizona→Michigan. <em>3 days.</em></li>
+        <li><strong>P2</strong> City pages: Naples, Fort Myers, Sarasota, Phoenix, Scottsdale. <em>3 days.</em></li>
+        <li><strong>P2</strong> Lazy-load Maps; <code>next/font</code>. <em>0.5 day.</em></li>
+        <li><strong>P3</strong> Second-tier northbound; Texas lanes; real reviews on site. <em>ongoing.</em></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="kpis">
+  <h2>KPI dashboard <span class="deliv">Deliverable 13</span></h2>
+  <div class="tbl"><table>
+    <thead><tr><th>KPI</th><th>Source</th><th>Cadence</th><th>What good looks like</th></tr></thead>
+    <tbody>
+      <tr><td>Indexed pages (of the 49 in the sitemap)</td><td>GSC → Pages</td><td>Weekly</td><td>Rising toward 49; template pages listed as "Excluded by noindex" is expected</td></tr>
+      <tr><td>Crawl requests per day</td><td>GSC → Crawl stats</td><td>Weekly</td><td>Rising after deploy and parent-site links</td></tr>
+      <tr><td>Impressions and clicks, by page group</td><td>GSC → Performance (filter /routes/, /destinations/, /resources/)</td><td>Weekly</td><td>First impressions on route and cost queries</td></tr>
+      <tr><td>Average position, commercial queries</td><td>GSC, query filter "to florida", "from florida", "snowbird"</td><td>Biweekly</td><td>Trending up; don't judge in the first 6 weeks</td></tr>
+      <tr><td>Organic sessions</td><td>GA4 → Organic Search</td><td>Weekly</td><td>Growth by landing page</td></tr>
+      <tr><td>Quote form starts and step drop-off</td><td>GA4 <code>quote_step_complete</code></td><td>Weekly</td><td>Step 1 → 2 drop-off falls after the ZIP fix</td></tr>
+      <tr><td>Leads (form)</td><td>GA4 <code>generate_lead</code> + MongoDB count</td><td>Weekly</td><td>The two counts match</td></tr>
+      <tr><td>Phone leads</td><td>GA4 <code>phone_click</code>; call tracking if added</td><td>Weekly</td><td>Clicks rising; completed calls once tracked</td></tr>
+      <tr><td>Qualified leads and bookings</td><td>MongoDB <code>status</code> by <code>pageUrl</code></td><td>Weekly</td><td>Bookings attributed to specific pages</td></tr>
+      <tr><td>Organic conversion rate</td><td>generate_lead ÷ organic sessions</td><td>Monthly</td><td>Stable or rising as traffic grows</td></tr>
+    </tbody>
+  </table></div>
+  <p class="src" style="margin-top:10px">No ranking, impression or lead targets are promised here. A two-week-old site's numbers move slowly at first.</p>
+</section>
+
+<section id="deploy">
+  <h2>Deploy &amp; verify guide <span class="deliv">Deliverable 14</span></h2>
+  <div class="col">
+    <h3>Before deploying</h3>
+    <ol>
+      <li>Review the changes: <code>git diff master...seo/p0-audit-fixes</code>, or let me commit them and open a pull request.</li>
+      <li>Have counsel confirm the trade-name point in question 2. Questions 1, 3 and 4 are already applied.</li>
+      <li>Have counsel read <code>/privacy-policy</code> and the broker wording on <code>/about</code>.</li>
+    </ol>
+    <h3>Deploy</h3>
+    <p>Merge into <code>master</code> and deploy the way you normally do. I don't know your server's exact steps; typically that's pull, <code>npm run build</code>, then restart the Node process. No URLs change, so no redirects are needed.</p>
+    <h3>After deploying, check these</h3>
+    <ol>
+      <li>Open <code>/routes/michigan-to-florida</code>, view source, and look for <code>noindex, follow</code>. <code>/routes/new-york-to-florida</code> should say <code>index, follow</code>.</li>
+      <li>Open <code>/sitemap.xml</code>: 49 URLs, no Michigan, Illinois, Minnesota or Wisconsin pages, no city pages.</li>
+      <li>On the homepage form, type "Rochester, NY" and "Naples, FL", pick a date, and press Continue. You should reach the vehicle step.</li>
+      <li>Search Console: Sitemaps → resubmit <code>sitemap.xml</code>. URL Inspection → Request indexing for the homepage, the 4 destination hubs, the 8 routes and /about.</li>
+      <li>Run Google's Rich Results Test on <code>/routes/new-york-to-florida</code>. It should find Breadcrumb and FAQ markup with no errors.</li>
+      <li>Two to three weeks later, check Search Console → Pages: the 45 template pages should move to "Excluded by noindex", which is the intended result.</li>
+    </ol>
+    <h3>In plain terms, what changed</h3>
+    <p>We stopped Google from judging the site by 45 pages that said the same thing with different place names. We took down anything that wasn't true: the fake license number, the placeholder phone numbers, the made-up reviews and statistics. We added the pages a careful customer looks for before trusting a company with their car. And we fixed the form so people who type their city can get a quote. Next, we build the pages people are searching for that you don't have yet, starting with shipping the car home from Florida.</p>
+  </div>
+</section>
+
+<footer>
+  Audit run 30 Oct 2026 against the live site and the local repository. Keyword evidence is Google Autocomplete; competitor notes are from live search results. Regulatory references: 49 CFR §371.7 and §371.107 (via Cornell LII); FMCSA cargo-insurance final rule, Federal Register 22 Jun 2010. This report is not legal advice; items marked for counsel need their review.
+</footer>
+</div>
+
+<script>
+(function () {
+  var sel = document.getElementById('f-action');
+  var rows = Array.prototype.slice.call(document.querySelectorAll('#inv tbody tr'));
+  var out = document.getElementById('f-count');
+  function apply() {
+    var v = sel.value, shown = 0;
+    rows.forEach(function (r) { var on = v === 'all' || r.getAttribute('data-action') === v; r.hidden = !on; if (on) shown++; });
+    out.textContent = shown + ' of ' + rows.length + ' URLs';
+  }
+  sel.addEventListener('change', apply);
+  apply();
+})();
+</script>

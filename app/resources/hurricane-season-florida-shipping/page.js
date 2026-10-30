@@ -25,11 +25,11 @@ const faqs = [
   },
   {
     q: 'My HOA requires the car garaged during a storm — can delivery timing match?',
-    a: 'Ask the carrier for a delivery window at least 48 hours before any storm watch. If a watch is issued mid-transit, the carrier may hold the car at a terminal until the storm passes. You will not be delivered a car in the middle of a hurricane. [INSERT EXPERIENCE]'
+    a: 'Ask the carrier for a delivery window at least 48 hours before any storm watch. If a watch is issued mid-transit, the carrier may hold the car at a terminal until the storm passes. You will not be delivered a car in the middle of a hurricane.'
   },
   {
     q: 'Does FEMA emergency restrictions ever block car carriers from Florida roads?',
-    a: 'During active storm response (first 72 hours after landfall), FEMA and state DOT may restrict non-essential commercial traffic on key corridors like I-75, I-95, and I-4. Carriers reroute or hold. This can shift delivery by 2 to 7 days during a direct-hit storm. [INSERT STAT + SOURCE: Florida DOT storm advisory]'
+    a: 'During active storm response (first 72 hours after landfall), FEMA and state DOT may restrict non-essential commercial traffic on key corridors like I-75, I-95, and I-4. Carriers reroute or hold. This can shift delivery by 2 to 7 days during a direct-hit storm.'
   },
   {
     q: 'Is enclosed transport "hurricane proof" for the drive down?',
@@ -41,7 +41,7 @@ const faqs = [
   },
   {
     q: 'What is the "cone of uncertainty" and does it change carrier routing?',
-    a: 'The NHC cone shows the probable track of a storm center over 5 days. Carriers avoid delivering into any ZIP code inside the cone during an active watch. If your delivery ZIP is in the cone, expect a 1 to 3 day hold until the storm clears. [INSERT: link to NHC resource]'
+    a: 'The NHC cone shows the probable track of a storm center over 5 days. Carriers generally avoid delivering into an area under an active hurricane watch or warning. If your delivery address is in the forecast path, expect a hold until the storm clears and roads reopen.'
   },
   {
     q: 'If a storm hits during round-trip booking, does my spring return leg get affected?',

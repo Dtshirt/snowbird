@@ -2,7 +2,7 @@ import './globals.css';
 import { site } from '@/data/site';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import Script from 'next/script';
+import Analytics from '@/components/Analytics';
 
 export const metadata = {
   metadataBase: new URL(site.url),
@@ -48,17 +48,28 @@ export const viewport = {
 };
 
 export default function RootLayout({ children }) {
-  const orgSchema = {
+  const siteSchema = {
     '@context': 'https://schema.org',
-    '@type': 'AutoRepair',
-    name: site.name,
-    url: site.url,
-    parentOrganization: { '@type': 'Organization', name: site.parent },
-    description: site.description,
-    telephone: site.phoneDisplay,
-    areaServed: 'US',
-    priceRange: '$$',
-    address: { '@type': 'PostalAddress', addressCountry: 'US' }
+    '@graph': [
+      {
+        '@type': 'Organization',
+        '@id': `${site.url}/#organization`,
+        name: site.name,
+        url: site.url,
+        description: site.description,
+        telephone: site.phoneDisplay,
+        email: site.email,
+        areaServed: { '@type': 'Country', name: 'United States' },
+        parentOrganization: { '@type': 'Organization', name: site.parent, url: site.parentUrl }
+      },
+      {
+        '@type': 'WebSite',
+        '@id': `${site.url}/#website`,
+        url: site.url,
+        name: site.name,
+        publisher: { '@id': `${site.url}/#organization` }
+      }
+    ]
   };
 
   return (
@@ -70,13 +81,11 @@ export default function RootLayout({ children }) {
           href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap"
           rel="stylesheet"
         />
-        <Script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(orgSchema) }}
-        />
         <meta name="google-site-verification" content="BIUgWs9Xp0z3RKe-IJYQluHV-6PD92NlZi_oL3I8q1c" />
       </head>
       <body>
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(siteSchema) }} />
+        <Analytics />
         <a
           href="#main"
           className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:m-3 focus:rounded-md focus:bg-brand-navy focus:px-4 focus:py-2 focus:text-white"

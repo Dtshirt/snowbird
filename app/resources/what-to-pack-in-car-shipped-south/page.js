@@ -45,7 +45,7 @@ const faqs = [
   },
   {
     q: 'What about my prescription medications or important documents?',
-    a: 'Never pack medications, passports, birth certificates, cash, jewelry, or any irreplaceable document in a shipped car. Ship these separately or carry them with you. [INSERT EXPERIENCE]'
+    a: 'Never pack medications, passports, birth certificates, cash, jewelry, or any irreplaceable document in a shipped car. Ship these separately or carry them with you.'
   },
   {
     q: 'Can I leave a car seat installed during shipping?',

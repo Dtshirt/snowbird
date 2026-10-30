@@ -21,7 +21,7 @@ const faqs = [
   },
   {
     q: 'Do I pay a deposit? If so, is it refundable?',
-    a: 'Many brokers charge no deposit until a carrier is dispatched. Some charge a small deposit ($100 to $200) at booking. Refund policies vary — confirm the deposit terms and cancellation window in writing before you pay.'
+    a: 'Many brokers charge no deposit until a carrier is dispatched. Some charge a small deposit ($100 to $200) at booking. Refund policies vary — confirm the deposit terms and cancellation window in writing before you pay. With Snowbird Car Shipping, the deposit is 10% of the shipping cost and is 100% refundable.'
   },
   {
     q: 'What is a "dispatch surcharge" and is it legitimate?',
@@ -45,7 +45,7 @@ const faqs = [
   },
   {
     q: 'If my car is dirty on pickup, will the carrier charge me?',
-    a: 'Carriers rarely charge for a dirty car, but a very dirty car makes the pickup inspection harder — damage visible later cannot be documented as pre-existing. Wash your car before pickup for clean inspection photos. [INSERT EXPERIENCE]'
+    a: 'Carriers rarely charge for a dirty car, but a very dirty car makes the pickup inspection harder — damage visible later cannot be documented as pre-existing. Wash your car before pickup for clean inspection photos.'
   },
   {
     q: 'What is a "cancellation fee" and when does it apply?',

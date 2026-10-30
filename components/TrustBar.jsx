@@ -1,20 +1,20 @@
 export default function TrustBar() {
   const items = [
     {
-      title: 'Licensed Broker',
-      description: 'Federally regulated auto transport broker'
+      title: 'Licensed Broker Partner',
+      description: 'Shipments arranged through an FMCSA-registered auto transport broker'
     },
     {
       title: 'Insured Carriers',
-      description: 'Every carrier maintains active cargo insurance'
+      description: 'Ask for the carrier’s certificate of insurance before pickup'
     },
     {
-      title: 'Nationwide Network',
-      description: 'Coverage across all 48 contiguous states'
+      title: 'Open or Enclosed',
+      description: 'Standard open carriers or covered trailers for higher-value cars'
     },
     {
-      title: 'Snowbird Specialists',
-      description: 'Focused on seasonal routes since 2011'
+      title: 'Both Directions',
+      description: 'South in the fall, back north in the spring'
     }
   ];
   return (

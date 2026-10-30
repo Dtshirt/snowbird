@@ -17,7 +17,7 @@ export function generateMetadata() {
 const faqs = [
   {
     q: 'Does The Villages in Florida allow full-size auto carriers inside the community?',
-    a: 'Policies vary by neighborhood within The Villages. Many areas allow carriers with 24 to 48 hour advance notice to the gatehouse. Low-clearance streets and tight circles may force a meet-up at a village square or outside gate. Call your village office before pickup to confirm. [INSERT EXPERIENCE]'
+    a: 'Policies vary by neighborhood within The Villages. Many areas allow carriers with 24 to 48 hour advance notice to the gatehouse. Low-clearance streets and tight circles may force a meet-up at a village square or outside gate. Call your village office before pickup to confirm.'
   },
   {
     q: 'What is the usual notice period for a 55+ community gatehouse?',

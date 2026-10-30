@@ -358,9 +358,9 @@ export default function ConnecticutCarShippingPage() {
               </p>
             </div>
             <div className="rounded-lg border-l-4 border-brand-gold bg-white p-5">
-              <h3 className="font-display text-lg font-bold text-brand-navy">Expedited (guaranteed pickup)</h3>
+              <h3 className="font-display text-lg font-bold text-brand-navy">Expedited (priority pickup)</h3>
               <p className="mt-2 text-sm text-slate-700 leading-relaxed">
-                A locked pickup date rather than a 3- to 5-day window. Adds $150 to $400. Worth it when a closing, lease start, Yale deadline, or flight is fixed.
+                Priority dispatch for a specific pickup date rather than a 3- to 5-day window. Dates are still targets, not guarantees. Adds $150 to $400. Worth it when a closing, lease start, Yale deadline, or flight is fixed.
               </p>
             </div>
             <div className="rounded-lg border-l-4 border-brand-gold bg-white p-5">

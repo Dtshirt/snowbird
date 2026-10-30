@@ -41,7 +41,7 @@ const faqs = [
   },
   {
     q: 'How do college football weekends affect Midwest-to-South routes?',
-    a: 'Big-game weekends tighten lodging and highway capacity on college-town routes (SEC, Big Ten corridors). Carriers plan around them. Dispatch may push your pickup window by a day during a home-game weekend in a college-heavy city on your route. [INSERT EXPERIENCE]'
+    a: 'Big-game weekends tighten lodging and highway capacity on college-town routes (SEC, Big Ten corridors). Carriers plan around them. Dispatch may push your pickup window by a day during a home-game weekend in a college-heavy city on your route.'
   },
   {
     q: 'If I book in August for a late-October southbound shipment, is the price final?',

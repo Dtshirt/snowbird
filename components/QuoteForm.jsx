@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import GooglePlacesInput from './GooglePlacesInput';
 import { vehicleMakes, getModelsForMake } from '@/data/vehicles';
+import { trackEvent } from '@/lib/analytics';
 
 const CONDITIONS = ['Running', 'Not Running'];
 const TRANSPORT = ['Open Transport', 'Enclosed Transport', 'Not Sure'];
@@ -51,7 +52,7 @@ function partialAddress(initial, kind) {
     zip: zip || '',
     lat: null,
     lng: null,
-    valid: Boolean(city && state && zip)
+    valid: Boolean(city && state)
   };
 }
 
@@ -191,13 +192,13 @@ export default function QuoteForm({
   function validateStep(current) {
     const e = {};
     if (current === 1) {
-      if (!values.pickup.formatted) e.pickup = 'Enter a pickup address.';
-      else if (!values.pickup.city || !values.pickup.state || !values.pickup.zip)
-        e.pickup = 'Select a pickup address from the suggestions.';
+      if (!values.pickup.formatted) e.pickup = 'Enter a pickup city and state.';
+      else if (!values.pickup.city || !values.pickup.state)
+        e.pickup = 'Enter a city and state (e.g. Rochester, NY) or pick a suggestion.';
 
-      if (!values.delivery.formatted) e.delivery = 'Enter a delivery address.';
-      else if (!values.delivery.city || !values.delivery.state || !values.delivery.zip)
-        e.delivery = 'Select a delivery address from the suggestions.';
+      if (!values.delivery.formatted) e.delivery = 'Enter a delivery city and state.';
+      else if (!values.delivery.city || !values.delivery.state)
+        e.delivery = 'Enter a city and state (e.g. Naples, FL) or pick a suggestion.';
 
       if (!values.pickupDate) e.pickupDate = 'Select a pickup date.';
     }
@@ -235,6 +236,7 @@ export default function QuoteForm({
       return;
     }
     setErrors({});
+    trackEvent('quote_step_complete', { step_number: step, step_name: STEPS[step - 1].key, page_type: pageType });
     setStep((s) => Math.min(s + 1, STEPS.length));
     if (typeof window !== 'undefined') {
       const el = document.getElementById('quote');
@@ -322,6 +324,14 @@ export default function QuoteForm({
 
       setQuoteId(data.quoteId);
       setStatus('success');
+      trackEvent('generate_lead', {
+        lead_source: payload.source,
+        page_type: pageType,
+        route_slug: routeSlug || undefined,
+        pickup_state: values.pickup.stateShort || values.pickup.state,
+        delivery_state: values.delivery.stateShort || values.delivery.state,
+        transport_type: values.transportType
+      });
     } catch (err) {
       setStatus('error');
       setServerMessage("We couldn't submit your request right now. Please check your information and try again.");
@@ -670,7 +680,8 @@ export default function QuoteForm({
                 required
               />
               <span className={classNames('text-[11px] leading-snug', onDark ? 'text-white/70' : 'text-slate-500')}>
-                I agree to be contacted by Snowbird &amp; partner carriers by phone, text, or email about my shipping request.
+                {CONSENT_TEXT}{' '}
+                <a href="/privacy-policy" target="_blank" rel="noopener" className="underline">Privacy Policy</a>
               </span>
             </label>
             {errors.consentGiven && (

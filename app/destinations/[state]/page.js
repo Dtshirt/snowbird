@@ -19,14 +19,11 @@ import {
 } from '@/data/destinations';
 import { getCitiesByDestination } from '@/data/cities';
 import { getRoutesByDestination } from '@/data/routes';
+import { staticDestinationSlugs } from '@/data/indexable';
 
 export function generateStaticParams() {
-  // /destinations/florida and /destinations/arizona are served by their own static
-  // pages for the full SEO-optimized hub, so they are excluded from the dynamic
-  // route params. Only Texas and California still use this shared template.
-  const staticSlugs = new Set(['florida', 'arizona', 'texas', 'california']);
   return destinationStates
-    .filter((d) => !staticSlugs.has(d.slug))
+    .filter((d) => !staticDestinationSlugs.has(d.slug))
     .map((d) => ({ state: d.slug }));
 }
 

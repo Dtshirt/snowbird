@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { parseTypedCityState } from '@/lib/usStates';
 
 let placesLibraryPromise = null;
 
@@ -167,16 +168,17 @@ export default function GooglePlacesInput({
 
   function handleTextChange(e) {
     const text = e.target.value;
+    const typed = parseTypedCityState(text);
     onChange({
       formatted: text,
       address1: value?.address1 || '',
-      city: '',
-      state: '',
-      stateShort: '',
-      zip: '',
+      city: typed?.city || '',
+      state: typed?.state || '',
+      stateShort: typed?.stateShort || '',
+      zip: typed?.zip || '',
       lat: null,
       lng: null,
-      valid: false
+      valid: Boolean(typed)
     });
     if (debounceRef.current) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => fetchSuggestions(text), 220);
@@ -192,7 +194,7 @@ export default function GooglePlacesInput({
       });
       const parsed = parsePlaceNew(place);
       if (parsed.formatted) {
-        onChange({ ...parsed, valid: Boolean(parsed.city && parsed.state && parsed.zip) });
+        onChange({ ...parsed, valid: Boolean(parsed.city && parsed.state) });
       }
       setOpen(false);
       setSuggestions([]);
@@ -320,7 +322,7 @@ export default function GooglePlacesInput({
           id={`${id}-fallback`}
           className={`mt-1 text-[11px] ${onDark ? 'text-white/60' : 'text-slate-500'}`}
         >
-          Address suggestions unavailable &mdash; please type your city, state, and ZIP manually.
+          Address suggestions unavailable &mdash; type your city and state, e.g. Rochester, NY.
         </p>
       )}
     </div>

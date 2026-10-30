@@ -4,6 +4,8 @@ import TrustBar from '@/components/TrustBar';
 import QuoteCTA from '@/components/QuoteCTA';
 import QuoteForm from '@/components/QuoteForm';
 import BrokerNote from '@/components/BrokerNote';
+import AnswerSummary from '@/components/AnswerSummary';
+import { site } from '@/data/site';
 import { getRouteBySlug, routes } from '@/data/routes';
 
 const slug = 'virginia-to-florida';
@@ -11,12 +13,12 @@ const route = getRouteBySlug(slug);
 
 export function generateMetadata() {
   return {
-    title: 'Virginia to Florida Car Shipping | Snowbird Auto Transport',
+    title: 'Virginia to Florida Car Shipping',
     description:
       'Ship your car from Virginia to Florida with transparent pricing from $650 open and $1,200 enclosed. The shortest East Coast corridor — Richmond to Jacksonville in 2–3 days. Free quote in two minutes.',
     alternates: { canonical: `/routes/${slug}` },
     openGraph: {
-      title: 'Virginia to Florida Car Shipping | Snowbird Auto Transport',
+      title: 'Virginia to Florida Car Shipping | Snowbird Car Shipping',
       description:
         'The shortest East Coast snowbird lane. Snowbird + Hampton Roads military PCS experience, NoVA enclosed depth, 2–5 day transit, from $650.',
       type: 'website'
@@ -131,7 +133,7 @@ const faqs = [
   },
   {
     q: 'Can I book round-trip shipping for both legs of my snowbird season?',
-    a: 'Yes. Round-trip bookings locked in before October usually run 10 to 15 percent below two one-way shipments bought separately. Virginia round-trip is especially well-priced because the short distance means both legs stay affordable. We confirm the southbound pickup window immediately and schedule the April or May northbound leg once your return date is set.'
+    a: 'Yes. You can book both legs together: the fall trip south now and the April or May trip north once your return date is set. Booking both early gets you first access to carrier capacity in both peak windows. It is a scheduling advantage, not a guaranteed discount, because each leg is priced on its own market rate.'
   }
 ];
 
@@ -183,15 +185,15 @@ export default function VirginiaToFloridaRoutePage() {
               <Link href="#quote" className="btn-primary">
                 Get My Free Quote
               </Link>
-              <a href="tel:+18005551234" className="btn-ghost border border-white/30 text-white">
-                Call (800) 555-1234
+              <a href={site.phoneHref} className="btn-ghost border border-white/30 text-white">
+                Call {site.phoneDisplay}
               </a>
             </div>
             <ul className="mt-8 grid gap-2 text-sm text-slate-200 sm:grid-cols-2">
               <li>&bull; 2&ndash;5 day typical transit</li>
               <li>&bull; Starting at $650 open / $1,100 enclosed</li>
-              <li>&bull; Snowbird + Hampton Roads PCS experienced</li>
-              <li>&bull; NoVA enclosed Palm Beach weekly runs</li>
+              <li>&bull; Snowbird and military PCS moves</li>
+              <li>&bull; Open or enclosed transport</li>
             </ul>
           </div>
           <div className="lg:col-span-2" id="quote"> 
@@ -218,6 +220,11 @@ export default function VirginiaToFloridaRoutePage() {
           <h2 className="mt-2 font-display text-3xl font-bold text-brand-navy">
             Virginia to Florida route overview
           </h2>
+          <AnswerSummary reviewed="2026-10-31">
+            Shipping a car from Virginia to Florida typically costs $650&ndash;$1,375 on an open carrier or $1,100&ndash;$1,675 in an
+            enclosed carrier for a standard sedan or SUV. Pickup is scheduled as a 1&ndash;3 day window, and transit
+            takes 2&ndash;5 days once the car is on the truck. For southbound shipments, book two to four weeks ahead.
+          </AnswerSummary>
           <div className="mt-6 overflow-hidden rounded-xl border border-slate-200">
             <table className="w-full text-left text-sm">
               <tbody className="divide-y divide-slate-200">

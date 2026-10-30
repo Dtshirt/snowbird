@@ -23,17 +23,18 @@ export default function HomeSEOContent() {
               Snowbird car shipping is a service built for people who spend part
               of the year in a warm state. You skip the long drive. A licensed
               carrier picks your car up at home. Then they bring it to your winter
-              address. In the spring, we do the trip the other way. You save
+              address. In the spring, the trip runs the other way. You save
               miles, time, and stress — and your car is waiting for you when
               you land.
             </p>
             <p className="mt-4">
-              We work the main snowbird lanes every day. Florida, Arizona, Texas,
-              and California are our four home destinations. From the Northeast,
-              the Midwest, the Mountain West, and Canada, we move cars south
-              in the fall and north in the spring. Snowbird Car Shipping is
-              a service of CarShippingHub, a licensed{' '}
-              <span className="font-semibold">snowbird auto transport</span> broker.
+              We focus on the main snowbird lanes. Florida, Arizona, Texas,
+              and California are our four home destinations. From the Northeast
+              and the Midwest, we arrange shipments south in the fall and north
+              in the spring. Snowbird Car Shipping is a CarShippingHub service.
+              Your <span className="font-semibold">snowbird auto transport</span> is
+              arranged through our licensed broker partner and carried by an
+              independent, insured motor carrier.
             </p>
           </div>
 
@@ -55,17 +56,18 @@ export default function HomeSEOContent() {
               Why snowbirds pick our auto transport team
             </h3>
             <ul className="mt-3 grid gap-3 sm:grid-cols-2">
-              <Benefit title="Licensed broker">
-                We are a licensed snowbird auto transport broker, not a random
-                third party.
+              <Benefit title="Licensed broker partner">
+                Every shipment is arranged through an FMCSA-registered auto
+                transport broker. We never pose as the carrier.
               </Benefit>
-              <Benefit title="Snowbird lanes every day">
-                We book Florida, Arizona, Texas, and California routes year
-                round, with a strong peak-season team.
+              <Benefit title="Built around the snowbird season">
+                Florida, Arizona, Texas, and California routes, planned around
+                the fall trip south and the spring trip home.
               </Benefit>
-              <Benefit title="Simple Booking Payment">
-                We collect 10% of total shipping cost as deposit to book a truck and rest 
-                amount will be paid at the time of delivery.
+              <Benefit title="Simple booking payment">
+                A deposit of 10% of the total shipping cost reserves your
+                carrier, and it is 100% refundable. You pay the balance at
+                delivery.
               </Benefit>
               <Benefit title="Door-to-door service">
                 The carrier gets as close to your door as the truck can safely
